@@ -23,4 +23,4 @@ $(SRCS:.cpp=.d):%.d:%.cpp
 
 .PHONY: clean
 clean:
-	${RM} ${TARGET_LIB} ${OBJS}
+	${RM} ${TARGET_LIB} ${OBJS} *.d
