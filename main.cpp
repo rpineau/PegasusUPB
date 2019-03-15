@@ -1,13 +1,8 @@
-#include <stdio.h>
-#include "../../licensedinterfaces/basicstringinterface.h"
 #include "main.h"
-#include "x2focuser.h"
-
-
 
 extern "C" PlugInExport int sbPlugInName2(BasicStringInterface& str)
 {
-	str = "X2 DFMC Focuser Plug In";
+	str = "X2Focuser PegasusUPB";
 
 	return 0;
 }

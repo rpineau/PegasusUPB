@@ -4,6 +4,9 @@
 	#define PlugInExport
 #endif
 
+#include <stdio.h>
+#include "../../licensedinterfaces/basicstringinterface.h"
+
 #include "x2focuser.h"
 
 extern "C" PlugInExport int sbPlugInName2(BasicStringInterface& str);

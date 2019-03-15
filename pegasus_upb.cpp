@@ -1,20 +1,11 @@
 //
 //  nexdome.cpp
-//  NexDome X2 plugin
+//  Pegasus Ultimate power box X2 plugin
 //
-//  Created by Rodolphe Pineau on 6/11/2016.
+//  Created by Rodolphe Pineau on 3/11/2019.
 
 
 #include "pegasus_upb.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <memory.h>
-#include <string.h>
-#include <time.h>
-#ifdef SB_MAC_BUILD
-#include <unistd.h>
-#endif
 
 
 CPegasusUPB::CPegasusUPB()

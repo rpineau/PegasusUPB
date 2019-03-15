@@ -1,19 +1,26 @@
 //
-//  dmfc.h
-//  NexDome
 //
-//  Created by Rodolphe Pineau on 2017/05/30.
-//  NexDome X2 plugin
+//  Created by Rodolphe Pineau on 3/11/2019.
+
 
 #ifndef __PEGASUS_C__
 #define __PEGASUS_C__
-#include <math.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <memory.h>
 #include <string.h>
+#include <time.h>
+#include <math.h>
+#ifdef SB_MAC_BUILD
+#include <unistd.h>
+#endif
+
 #include <string>
 #include <vector>
 #include <sstream>
 #include <iostream>
-
 #include <exception>
 #include <typeinfo>
 #include <stdexcept>
@@ -22,7 +29,7 @@
 #include "../../licensedinterfaces/serxinterface.h"
 #include "../../licensedinterfaces/loggerinterface.h"
 
-#define PEGA_DEBUG
+#define PEGA_DEBUG 2
 
 #ifdef PEGA_DEBUG
 #if defined(SB_WIN_BUILD)
@@ -34,9 +41,10 @@
 #endif
 #endif
 
-#define SERIAL_BUFFER_SIZE 256
+#define SERIAL_BUFFER_SIZE 1024
+#define LOG_BUFFER_SIZE 1024
+
 #define MAX_TIMEOUT 1000
-#define LOG_BUFFER_SIZE 256
 
 enum DMFC_Errors    {PB_OK = 0, NOT_CONNECTED, ND_CANT_CONNECT, UPB_BAD_CMD_RESPONSE, COMMAND_FAILED};
 enum DeviceType     {NONE = 0, UPB, PPB};
@@ -45,7 +53,6 @@ enum GetLedStatus   {OFF = 0, ON};
 enum SetLEdStatus   {SWITCH_OFF = 1, SWITCH_ON};
 enum MotorDir       {NORMAL = 0 , REVERSE};
 enum MotorStatus    {IDLE = 0, MOVING};
-enum RotaryEnable   {R_ON = 0, R_OFF};
 
 
 typedef struct {

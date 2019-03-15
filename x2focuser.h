@@ -3,11 +3,25 @@
 #ifndef __X2Focuser_H_
 #define __X2Focuser_H_
 
-#include "../../licensedinterfaces/focuserdriverinterface.h"
+#include <stdio.h>
+#include <string.h>
+
+#include "../../licensedinterfaces/theskyxfacadefordriversinterface.h"
+#include "../../licensedinterfaces/sleeperinterface.h"
+#include "../../licensedinterfaces/loggerinterface.h"
+#include "../../licensedinterfaces/basiciniutilinterface.h"
+#include "../../licensedinterfaces/mutexinterface.h"
+#include "../../licensedinterfaces/basicstringinterface.h"
+#include "../../licensedinterfaces/tickcountinterface.h"
+#include "../../licensedinterfaces/serxinterface.h"
+#include "../../licensedinterfaces/sberrorx.h"
+#include "../../licensedinterfaces/serialportparams2interface.h"
 #include "../../licensedinterfaces/serialportparams2interface.h"
 #include "../../licensedinterfaces/modalsettingsdialoginterface.h"
-#include "../../licensedinterfaces/focuser/focusertemperatureinterface.h"
 #include "../../licensedinterfaces/x2guiinterface.h"
+#include "../../licensedinterfaces/focuserdriverinterface.h"
+#include "../../licensedinterfaces/focuser/focusertemperatureinterface.h"
+
 
 #include "StopWatch.h"
 #include "pegasus_upb.h"
@@ -24,7 +38,7 @@ class TickCountInterface;
 
 #define DRIVER_VERSION      1.0
 
-#define PARENT_KEY			"DMFC"
+#define PARENT_KEY			"PegasusUPB"
 #define CHILD_KEY_PORTNAME	"PortName"
 #define POS_LIMIT           "PosLimit"
 #define POS_LIMIT_ENABLED   "PosLimitEnable"
@@ -37,9 +51,6 @@ class TickCountInterface;
 #elif defined(SB_LINUX_BUILD)
 #define DEF_PORT_NAME					"/dev/ttyUSB0"
 #endif
-
-#define LOG_BUFFER_SIZE 256
-#define TMP_BUF_SIZE    1024
 
 /*!
 \brief The X2Focuser example.
