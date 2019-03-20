@@ -211,6 +211,7 @@ int	X2Focuser::execModalSettingsDialog(void)
     X2ModalUIUtil uiutil(this, GetTheSkyXFacadeForDrivers());
     X2GUIInterface*					ui = uiutil.X2UI();
     X2GUIExchangeInterface*			dx = NULL;//Comes after ui is loaded
+    char tmpBuf[SERIAL_BUFFER_SIZE];
     bool bPressedOK = false;
     int nMaxSpeed = 0;
     int nPosition = 0;
@@ -224,7 +225,7 @@ int	X2Focuser::execModalSettingsDialog(void)
     if (NULL == ui)
         return ERR_POINTER;
 
-    if ((nErr = ui->loadUserInterface("PegasusController.ui", deviceType(), m_nPrivateMulitInstanceIndex)))
+    if ((nErr = ui->loadUserInterface("PegasusUPB.ui", deviceType(), m_nPrivateMulitInstanceIndex)))
         return nErr;
 
     if (NULL == (dx = uiutil.X2DX()))
@@ -278,8 +279,24 @@ int	X2Focuser::execModalSettingsDialog(void)
         else
             dx->setChecked("backlashEnable", false);
 
-        if(nErr)
-            return nErr;
+        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getVoltage());
+        dx->setPropertyString("ticksPerRev","voltage", tmpBuf);
+
+        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f A", m_PegasusUPB.getCurrent());
+        dx->setPropertyString("currentcurrent","voltage", tmpBuf);
+
+        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%d W", m_PegasusUPB.getPower());
+        dx->setPropertyString("totalPower","voltage", tmpBuf);
+
+        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f ºC", m_PegasusUPB.getTemp());
+        dx->setPropertyString("temperature","voltage", tmpBuf);
+
+        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%d %%", m_PegasusUPB.getHumidity());
+        dx->setPropertyString("humidity","voltage", tmpBuf);
+
+        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getDewPoint());
+        dx->setPropertyString("dewPoint","voltage", tmpBuf);
+
     }
     else {
         // disable unsued controls when not connected
@@ -294,6 +311,13 @@ int	X2Focuser::execModalSettingsDialog(void)
         dx->setPropertyInt("backlashSteps", "value", 0);
         dx->setEnabled("backlashEnable", false);
         dx->setEnabled("checkBox", false);
+        dx->setEnabled("checkBox_2", false);
+        dx->setEnabled("checkBox_3", false);
+        dx->setEnabled("checkBox_4", false);
+        dx->setEnabled("checkBox_5", false);
+        dx->setEnabled("checkBox_6", false);
+        dx->setEnabled("checkBox_7", false);
+        dx->setEnabled("checkBox_8", false);
         dx->setEnabled("radioButton", false);
         dx->setEnabled("radioButton_2", false);
     }
@@ -361,7 +385,9 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
     int nErr = SB_OK;
     int nTmpVal;
     char szErrorMessage[LOG_BUFFER_SIZE];
-	
+
+    printf("Event = %s\n", pszEvent);
+
     // max speed
     if (!strcmp(pszEvent, "on_pushButton_clicked")) {
         uiex->propertyInt("maxSpeed", "value", nTmpVal);

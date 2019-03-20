@@ -291,7 +291,8 @@ int CPegasusUPB::getConsolidatedStatus()
 {
     int nErr;
     char szResp[SERIAL_BUFFER_SIZE];
-    int portStatus;
+    int nPortStatus;
+    int nOvercurrentStatus;
     int nUsbPortOff;
 
 	if(!m_bIsConnected)
@@ -302,24 +303,42 @@ int CPegasusUPB::getConsolidatedStatus()
         return nErr;
 
     nErr = upbCommand("PA\n", szResp, SERIAL_BUFFER_SIZE);
-    if(nErr)
+    if(nErr) {
+#ifdef PEGA_DEBUG
+        ltime = time(NULL);
+        timestamp = asctime(localtime(&ltime));
+        timestamp[strlen(timestamp) - 1] = 0;
+        fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] ERROR = %d\n", timestamp, nErr);
+        fflush(Logfile);
+#endif
         return nErr;
+    }
 
 #ifdef PEGA_DEBUG
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s] CPegasusUPB::getConsolidatedStatus about to parse response\n", timestamp);
+	fprintf(Logfile, "[%s][CPegasusUPB::getConsolidatedStatus]  about to parse response\n", timestamp);
 	fflush(Logfile);
 #endif
 
     // parse response
     nErr = parseResp(szResp, m_svParsedRespForPA);
+    if(nErr) {
+#ifdef PEGA_DEBUG
+        ltime = time(NULL);
+        timestamp = asctime(localtime(&ltime));
+        timestamp[strlen(timestamp) - 1] = 0;
+        fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] parse error = %d\n", timestamp, nErr);
+        fflush(Logfile);
+#endif
+        return nErr;
+    }
 #ifdef PEGA_DEBUG
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s] CPegasusUPB::getConsolidatedStatus response parsing done\n", timestamp);
+	fprintf(Logfile, "[%s][CPegasusUPB::getConsolidatedStatus]  response parsing done\n", timestamp);
 	fflush(Logfile);
 #endif
 
@@ -328,23 +347,24 @@ int CPegasusUPB::getConsolidatedStatus()
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] CPegasusUPB::getConsolidatedStatus parsing returned an incomplete answer\n", timestamp);
+        fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus]  parsing returned an incomplete answer\n", timestamp);
         fflush(Logfile);
 #endif
         return UPB_BAD_CMD_RESPONSE;
     }
+
     m_globalStatus.fVoltage = std::stof(m_svParsedRespForPA[upbVoltage]);
     m_globalStatus.fCurent = std::stof(m_svParsedRespForPA[upbCurrent]);
-    m_globalStatus.fPower = std::stof(m_svParsedRespForPA[upbPower]);
+    m_globalStatus.nPower = std::stoi(m_svParsedRespForPA[upbPower]);
     m_globalStatus.fTemp = std::stof(m_svParsedRespForPA[upbTemp]);
-    m_globalStatus.fHumidity = std::stof(m_svParsedRespForPA[upbHumidity]);
+    m_globalStatus.nHumidity = std::stoi(m_svParsedRespForPA[upbHumidity]);
     m_globalStatus.fDewPoint = std::stof(m_svParsedRespForPA[upbDewPoint]);
 
-    portStatus = std::stoi(m_svParsedRespForPA[upbPortStatus]);
-    m_globalStatus.bPort1On = (portStatus & 1)      == 1? true : false;
-    m_globalStatus.bPort2On = (portStatus & 2) >> 1 == 1? true : false;
-    m_globalStatus.bPort3On = (portStatus & 4) >> 2 == 1? true : false;
-    m_globalStatus.bPort4On = (portStatus & 8) >> 3 == 1? true : false;
+    nPortStatus = std::stoi(m_svParsedRespForPA[upbPortStatus]);
+    m_globalStatus.bPort1On = (nPortStatus & 1)      == 1? true : false;
+    m_globalStatus.bPort2On = (nPortStatus & 2) >> 1 == 1? true : false;
+    m_globalStatus.bPort3On = (nPortStatus & 4) >> 2 == 1? true : false;
+    m_globalStatus.bPort4On = (nPortStatus & 8) >> 3 == 1? true : false;
 
     nUsbPortOff = std::stoi(m_svParsedRespForPA[upbUsbStatus]);
     m_globalStatus.bUsbPortOff = std::stoi(m_svParsedRespForPA[upbUsbStatus]) == 1 ? true: false;
@@ -352,17 +372,49 @@ int CPegasusUPB::getConsolidatedStatus()
     m_globalStatus.nDew1PWM = std::stoi(m_svParsedRespForPA[upbDew1PWM]);
     m_globalStatus.nDew2PWM = std::stoi(m_svParsedRespForPA[upbDew2PWM]);
     
-    m_globalStatus.fCurrentPort1 = std::stof(m_svParsedRespForPA[upbCurrentPort1]);
-    m_globalStatus.fCurrentPort2 = std::stof(m_svParsedRespForPA[upbCurrentPort2]);
-    m_globalStatus.fCurrentPort3 = std::stof(m_svParsedRespForPA[upbCurrentPort3]);
-    m_globalStatus.fCurrentPort4 = std::stof(m_svParsedRespForPA[upbCurrentPort4]);
+    m_globalStatus.fCurrentPort1 = std::stof(m_svParsedRespForPA[upbCurrentPort1])/400;
+    m_globalStatus.fCurrentPort2 = std::stof(m_svParsedRespForPA[upbCurrentPort2])/400;
+    m_globalStatus.fCurrentPort3 = std::stof(m_svParsedRespForPA[upbCurrentPort3])/400;
+    m_globalStatus.fCurrentPort4 = std::stof(m_svParsedRespForPA[upbCurrentPort4])/400;
 
     m_globalStatus.fCurrentDew1 = std::stof(m_svParsedRespForPA[upbCurrentDew1]);
     m_globalStatus.fCurrentDew2 = std::stof(m_svParsedRespForPA[upbCurrentDew2]);
-    
-    m_globalStatus.bOverCurrent = std::stoi(m_svParsedRespForPA[upbOvercurent]) == 1 ? true : false;
+
+    nOvercurrentStatus = std::stoi(m_svParsedRespForPA[upbOvercurent]);
+    m_globalStatus.bOverCurrentPort1 = (nPortStatus & 1)      == 1? true : false;
+    m_globalStatus.bOverCurrentPort1 = (nPortStatus & 2) >> 1 == 1? true : false;
+    m_globalStatus.bOverCurrentPort1 = (nPortStatus & 4) >> 2 == 1? true : false;
+    m_globalStatus.bOverCurrentPort1 = (nPortStatus & 8) >> 3 == 1? true : false;
+
+    m_globalStatus.bOverCurrentDew1 = (nPortStatus & 16) >> 4 == 1? true : false;
+    m_globalStatus.bOverCurrentDew1 = (nPortStatus & 32) >> 5 == 1? true : false;
+
     m_globalStatus.bAutoDew = std::stoi(m_svParsedRespForPA[upbAutodew]) == 1 ? true : false;
 
+    nErr = getOnBootPowerState();
+
+    return nErr;
+}
+
+int CPegasusUPB::getOnBootPowerState()
+{
+    int nErr = PB_OK;
+    char szResp[SERIAL_BUFFER_SIZE];
+    int nTmp;
+    if(!m_bIsConnected)
+        return ERR_COMMNOLINK;
+
+    // get power state for all 4 ports
+    nErr = upbCommand("PS:1111\n", szResp, SERIAL_BUFFER_SIZE);
+    if(nErr)
+        return nErr;
+
+    // parse response
+    nTmp = atoi(szResp);
+    m_globalStatus.bOnBootPort1On = (nTmp & 1)      == 1? true : false;
+    m_globalStatus.bOnBootPort2On = (nTmp & 2) >> 1 == 1? true : false;
+    m_globalStatus.bOnBootPort3On = (nTmp & 4) >> 2 == 1? true : false;
+    m_globalStatus.bOnBootPort4On = (nTmp & 8) >> 3 == 1? true : false;
     return nErr;
 }
 
@@ -374,7 +426,7 @@ int CPegasusUPB::getMotoMaxSpeed(int &nSpeed)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
-    nErr = upbCommand("SS:\n", szResp, SERIAL_BUFFER_SIZE);
+    nErr = upbCommand("SS\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
         return nErr;
 
@@ -638,6 +690,139 @@ int CPegasusUPB::getReverseEnable(bool &bEnabled)
     bEnabled = m_globalStatus.focuser.bReverse;
 
     return nErr;
+}
+
+float CPegasusUPB::getVoltage()
+{
+    return m_globalStatus.fVoltage;
+}
+
+float CPegasusUPB::getCurrent()
+{
+    return m_globalStatus.fCurent;
+}
+
+int CPegasusUPB::getPower()
+{
+    return m_globalStatus.nPower;
+}
+
+float CPegasusUPB::getTemp()
+{
+    return m_globalStatus.fTemp;
+}
+
+int CPegasusUPB::getHumidity()
+{
+    return m_globalStatus.nHumidity;
+}
+
+float CPegasusUPB::getDewPoint()
+{
+    return m_globalStatus.fDewPoint;
+
+}
+
+bool CPegasusUPB::getPortOn(const int &nPortNumber)
+{
+    switch(nPortNumber) {
+        case 1:
+            return m_globalStatus.bPort1On;
+            break;
+
+        case 2:
+            return m_globalStatus.bPort2On;
+            break;
+
+        case 3:
+            return m_globalStatus.bPort3On;
+            break;
+
+        case 4:
+            return m_globalStatus.bPort4On;
+            break;
+
+        default:
+            return false;
+            break;
+    }
+}
+
+
+float CPegasusUPB::getPortCurrent(const int &nPortNumber)
+{
+    switch(nPortNumber) {
+        case 1:
+            return m_globalStatus.fCurrentPort1;
+            break;
+
+        case 2:
+            return m_globalStatus.fCurrentPort2;
+            break;
+
+        case 3:
+            return m_globalStatus.fCurrentPort3;
+            break;
+
+        case 4:
+            return m_globalStatus.fCurrentPort4;
+            break;
+
+        default:
+            return 0.0f;
+            break;
+    }
+}
+
+
+bool CPegasusUPB::getOnBootPortOn(const int &nPortNumber)
+{
+    switch(nPortNumber) {
+        case 1:
+            return m_globalStatus.bOnBootPort1On;
+            break;
+
+        case 2:
+            return m_globalStatus.bOnBootPort2On;
+            break;
+
+        case 3:
+            return m_globalStatus.bOnBootPort3On;
+            break;
+
+        case 4:
+            return m_globalStatus.bOnBootPort4On;
+            break;
+
+        default:
+            return false;
+            break;
+    }
+}
+
+bool CPegasusUPB::isOverCurrentPort(const int &nPortNumber)
+{
+    switch(nPortNumber) {
+        case 1:
+            return m_globalStatus.bOverCurrentPort1;
+            break;
+
+        case 2:
+            return m_globalStatus.bOverCurrentPort2;
+            break;
+
+        case 3:
+            return m_globalStatus.bOverCurrentPort3;
+            break;
+
+        case 4:
+            return m_globalStatus.bOverCurrentPort4;
+            break;
+
+        default:
+            return false;
+            break;
+    }
 }
 
 #pragma mark command and response functions

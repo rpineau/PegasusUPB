@@ -71,14 +71,18 @@ typedef struct {
     int     nLedStatus;
     float   fVoltage;
     float   fCurent;
-    float   fPower;
+    int     nPower;
     float   fTemp;
-    float   fHumidity;
+    int     nHumidity;
     float   fDewPoint;
     bool    bPort1On;
     bool    bPort2On;
     bool    bPort3On;
     bool    bPort4On;
+    bool    bOnBootPort1On;
+    bool    bOnBootPort2On;
+    bool    bOnBootPort3On;
+    bool    bOnBootPort4On;
     bool    bUsbPortOff;
     int     nDew1PWM;
     int     nDew2PWM;
@@ -88,7 +92,12 @@ typedef struct {
     float   fCurrentPort4;
     float   fCurrentDew1;
     float   fCurrentDew2;
-    bool    bOverCurrent;
+    bool    bOverCurrentPort1;
+    bool    bOverCurrentPort2;
+    bool    bOverCurrentPort3;
+    bool    bOverCurrentPort4;
+    bool    bOverCurrentDew1;
+    bool    bOverCurrentDew2;
     bool    bAutoDew;
     upbFocuser focuser;
 } upbStatus;
@@ -143,11 +152,10 @@ public:
     int         isMotorMoving(bool &bMoving);
 
     // getter and setter
-    void        setDebugLog(bool bEnable) {m_bDebugLog = bEnable; };
-
     int         getStatus(int &nStatus);
     int         getStepperStatus(void);
     int         getConsolidatedStatus(void);
+    int         getOnBootPowerState(void);
 
     int         getMotoMaxSpeed(int &nSpeed);
     int         setMotoMaxSpeed(int nSpeed);
@@ -176,11 +184,24 @@ public:
     int         setReverseEnable(bool bEnabled);
     int         getReverseEnable(bool &bEnabled);
 
+    float       getVoltage();
+    float       getCurrent();
+    int         getPower();
+    float       getTemp();
+    int         getHumidity();
+    float       getDewPoint();
+
+    bool        getPortOn(const int &nPortNumber);
+    float       getPortCurrent(const int &nPortNumber);
+    bool        getOnBootPortOn(const int &nPortNumber);
+    bool        isOverCurrentPort(const int &nPortNumber);
+
 protected:
 
     int             upbCommand(const char *pszCmd, char *pszResult, int nResultMaxLen);
     int             readResponse(char *pszRespBuffer, int nBufferLen);
     int             parseResp(char *pszResp, std::vector<std::string>  &sParsedRes);
+
 
 
     SerXInterface   *m_pSerx;
