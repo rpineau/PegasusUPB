@@ -280,23 +280,30 @@ int	X2Focuser::execModalSettingsDialog(void)
             dx->setChecked("backlashEnable", false);
 
         snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getVoltage());
-        dx->setPropertyString("ticksPerRev","voltage", tmpBuf);
+        dx->setPropertyString("voltage","text", tmpBuf);
 
         snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f A", m_PegasusUPB.getCurrent());
-        dx->setPropertyString("currentcurrent","voltage", tmpBuf);
+        dx->setPropertyString("currentcurrent","text", tmpBuf);
 
         snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%d W", m_PegasusUPB.getPower());
-        dx->setPropertyString("totalPower","voltage", tmpBuf);
+        dx->setPropertyString("totalPower","text", tmpBuf);
 
         snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f ºC", m_PegasusUPB.getTemp());
-        dx->setPropertyString("temperature","voltage", tmpBuf);
+        dx->setPropertyString("temperature","text", tmpBuf);
 
         snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%d %%", m_PegasusUPB.getHumidity());
-        dx->setPropertyString("humidity","voltage", tmpBuf);
+        dx->setPropertyString("humidity","text", tmpBuf);
 
         snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getDewPoint());
-        dx->setPropertyString("dewPoint","voltage", tmpBuf);
-
+        dx->setPropertyString("dewPoint","text", tmpBuf);
+        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(1)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(1));
+        dx->setPropertyString("port1Draw","text", tmpBuf);
+        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(2)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(2));
+        dx->setPropertyString("port2Draw","text", tmpBuf);
+        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(3)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(3));
+        dx->setPropertyString("port3Draw","text", tmpBuf);
+        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(4)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(4));
+        dx->setPropertyString("port4Draw","text", tmpBuf);
     }
     else {
         // disable unsued controls when not connected
@@ -320,7 +327,15 @@ int	X2Focuser::execModalSettingsDialog(void)
         dx->setEnabled("checkBox_8", false);
         dx->setEnabled("radioButton", false);
         dx->setEnabled("radioButton_2", false);
+        dx->setPropertyString("port1Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
+        dx->setPropertyString("port2Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">--.- A</span></p></body></html>");
+        dx->setPropertyString("port3Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">--.- A</span></p></body></html>");
+        dx->setPropertyString("port4Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">--.- A</span></p></body></html>");
     }
+
+    // test
+    dx->setPropertyString("port1Draw","text", "<html><head/><body><p><span style=\" color:#ff0000;\">00.0 A</span></p></body></html>");
+    dx->setPropertyString("port2Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">00.0 A</span></p></body></html>");
 
     // linit is done in software so it's always enabled.
     dx->setEnabled("posLimit", true);
