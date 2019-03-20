@@ -296,6 +296,7 @@ int	X2Focuser::execModalSettingsDialog(void)
 
         snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getDewPoint());
         dx->setPropertyString("dewPoint","text", tmpBuf);
+        
         snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(1)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(1));
         dx->setPropertyString("port1Draw","text", tmpBuf);
         snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(2)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(2));
