@@ -12,7 +12,7 @@ CPegasusUPB::CPegasusUPB()
 {
     m_globalStatus.nDeviceType = NONE;
     m_globalStatus.bReady = false;
-    memset(m_globalStatus.szVersion,0,SERIAL_BUFFER_SIZE);
+    memset(m_globalStatus.szVersion,0,TEXT_BUFFER_SIZE);
 
     m_nTargetPos = 0;
     m_nPosLimit = 0;
@@ -22,13 +22,28 @@ CPegasusUPB::CPegasusUPB()
     m_pSerx = NULL;
     m_pLogger = NULL;
 
-#ifdef	PEGA_DEBUG
-	Logfile = fopen(PEGA_LOGFILENAME, "w");
-	ltime = time(NULL);
-	char *timestamp = asctime(localtime(&ltime));
-	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s] CPegasusUPB Constructor Called.\n", timestamp);
-	fflush(Logfile);
+
+#ifdef PEGA_DEBUG
+#if defined(SB_WIN_BUILD)
+    m_sLogfilePath = getenv("HOMEDRIVE");
+    m_sLogfilePath += getenv("HOMEPATH");
+    m_sLogfilePath += "\\X2_PegasusUPBLog.txt";
+#elif defined(SB_LINUX_BUILD)
+    m_sLogfilePath = getenv("HOME");
+    m_sLogfilePath += "/X2_PegasusUPBLog.txt";
+#elif defined(SB_MAC_BUILD)
+    m_sLogfilePath = getenv("HOME");
+    m_sLogfilePath += "/X2_PegasusUPBLog.txt";
+#endif
+    Logfile = fopen(m_sLogfilePath.c_str(), "w");
+#endif
+
+#if defined PEGA_DEBUG && PEGA_DEBUG >= 2
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] Constructor Called.\n", timestamp);
+    fflush(Logfile);
 #endif
 
 }
@@ -75,14 +90,6 @@ int CPegasusUPB::Connect(const char *pszPort)
 	fflush(Logfile);
 #endif
 	
-    if (m_bDebugLog && m_pLogger) {
-        snprintf(m_szLogBuffer,LOG_BUFFER_SIZE,"[CPegasusUPB::Connect] Connected.\n");
-        m_pLogger->out(m_szLogBuffer);
-
-        snprintf(m_szLogBuffer,LOG_BUFFER_SIZE,"[CPegasusUPB::Connect] Getting Firmware.\n");
-        m_pLogger->out(m_szLogBuffer);
-    }
-
     // get status so we can figure out what device we are connecting to.
 #ifdef PEGA_DEBUG
 	ltime = time(NULL);
@@ -837,10 +844,6 @@ int CPegasusUPB::upbCommand(const char *pszszCmd, char *pszResult, int nResultMa
 		return ERR_COMMNOLINK;
 
     m_pSerx->purgeTxRx();
-    if (m_bDebugLog && m_pLogger) {
-        snprintf(m_szLogBuffer,LOG_BUFFER_SIZE,"[CPegasusUPB::upbCommand] Sending %s\n",pszszCmd);
-        m_pLogger->out(m_szLogBuffer);
-    }
 #ifdef PEGA_DEBUG
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
@@ -853,25 +856,14 @@ int CPegasusUPB::upbCommand(const char *pszszCmd, char *pszResult, int nResultMa
 
     // printf("Command %s sent. wrote %lu bytes\n", szCmd, ulBytesWrite);
     if(nErr){
-        if (m_bDebugLog && m_pLogger) {
-            snprintf(m_szLogBuffer,LOG_BUFFER_SIZE,"[CPegasusUPB::upbCommand] writeFile Error.\n");
-            m_pLogger->out(m_szLogBuffer);
-        }
         return nErr;
     }
 
     if(pszResult) {
         // read response
-        if (m_bDebugLog && m_pLogger) {
-            snprintf(m_szLogBuffer,LOG_BUFFER_SIZE,"[CPegasusUPB::upbCommand] Getting response.\n");
-            m_pLogger->out(m_szLogBuffer);
-        }
         nErr = readResponse(szResp, SERIAL_BUFFER_SIZE);
         if(nErr){
-            if (m_bDebugLog && m_pLogger) {
-                snprintf(m_szLogBuffer,LOG_BUFFER_SIZE,"[CPegasusUPB::upbCommand] readResponse Error.\n");
-                m_pLogger->out(m_szLogBuffer);
-            }
+            return nErr;
         }
 #ifdef PEGA_DEBUG
 		ltime = time(NULL);
@@ -909,18 +901,10 @@ int CPegasusUPB::readResponse(char *pszRespBuffer, int nBufferLen)
     do {
         nErr = m_pSerx->readFile(pszBufPtr, 1, ulBytesRead, MAX_TIMEOUT);
         if(nErr) {
-            if (m_bDebugLog && m_pLogger) {
-                snprintf(m_szLogBuffer,LOG_BUFFER_SIZE,"[CPegasusUPB::readResponse] readFile Error.\n");
-                m_pLogger->out(m_szLogBuffer);
-            }
             return nErr;
         }
 
         if (ulBytesRead !=1) {// timeout
-            if (m_bDebugLog && m_pLogger) {
-                snprintf(m_szLogBuffer,LOG_BUFFER_SIZE,"[CPegasusUPB::readResponse] readFile Timeout.\n");
-                m_pLogger->out(m_szLogBuffer);
-            }
 #ifdef PEGA_DEBUG
 			ltime = time(NULL);
 			timestamp = asctime(localtime(&ltime));
@@ -932,10 +916,6 @@ int CPegasusUPB::readResponse(char *pszRespBuffer, int nBufferLen)
             break;
         }
         ulTotalBytesRead += ulBytesRead;
-        if (m_bDebugLog && m_pLogger) {
-            snprintf(m_szLogBuffer,LOG_BUFFER_SIZE,"[CPegasusUPB::readResponse] ulBytesRead = %lu\n",ulBytesRead);
-            m_pLogger->out(m_szLogBuffer);
-        }
     } while (*pszBufPtr++ != '\n' && ulTotalBytesRead < nBufferLen );
 
     if(ulTotalBytesRead)

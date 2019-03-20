@@ -169,7 +169,7 @@ private:
 	bool                                    m_bLinked;
 	int                                     m_nPosition;
     double                                  m_fLastTemp;
-    CPegasusUPB                      m_PegasusUPB;
+    CPegasusUPB                             m_PegasusUPB;
     bool                                    m_bReverseEnabled;
 
 };

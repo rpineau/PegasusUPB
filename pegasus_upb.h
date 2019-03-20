@@ -42,9 +42,8 @@
 #endif
 
 #define SERIAL_BUFFER_SIZE 1024
-#define LOG_BUFFER_SIZE 1024
-
 #define MAX_TIMEOUT 1000
+#define TEXT_BUFFER_SIZE    1024
 
 enum DMFC_Errors    {PB_OK = 0, NOT_CONNECTED, ND_CANT_CONNECT, UPB_BAD_CMD_RESPONSE, COMMAND_FAILED};
 enum DeviceType     {NONE = 0, UPB, PPB};
@@ -67,7 +66,7 @@ typedef struct {
 typedef struct {
     int     nDeviceType;
     bool    bReady;
-    char    szVersion[SERIAL_BUFFER_SIZE];
+    char    szVersion[TEXT_BUFFER_SIZE];
     int     nLedStatus;
     float   fVoltage;
     float   fCurent;
@@ -209,8 +208,7 @@ protected:
 
     bool            m_bDebugLog;
     bool            m_bIsConnected;
-    char            m_szFirmwareVersion[SERIAL_BUFFER_SIZE];
-    char            m_szLogBuffer[LOG_BUFFER_SIZE];
+    char            m_szFirmwareVersion[TEXT_BUFFER_SIZE];
 
     std::vector<std::string>    m_svParsedRespForSA;
     std::vector<std::string>    m_svParsedRespForPA;
@@ -222,10 +220,11 @@ protected:
 	bool			m_bAbborted;
 	
 #ifdef PEGA_DEBUG
-	// timestamp for logs
-	char *timestamp;
-	time_t ltime;
-	FILE *Logfile;	  // LogFile
+    std::string m_sLogfilePath;
+    // timestamp for logs
+    char *timestamp;
+    time_t ltime;
+    FILE *Logfile;      // LogFile
 #endif
 
 };

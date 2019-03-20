@@ -137,8 +137,8 @@ void X2Focuser::deviceInfoFirmwareVersion(BasicStringInterface& str)
     }
     else {
     // get firmware version
-        char cFirmware[SERIAL_BUFFER_SIZE];
-        m_PegasusUPB.getFirmwareVersion(cFirmware, SERIAL_BUFFER_SIZE);
+        char cFirmware[TEXT_BUFFER_SIZE];
+        m_PegasusUPB.getFirmwareVersion(cFirmware, TEXT_BUFFER_SIZE);
         str = cFirmware;
     }
 }
@@ -211,7 +211,7 @@ int	X2Focuser::execModalSettingsDialog(void)
     X2ModalUIUtil uiutil(this, GetTheSkyXFacadeForDrivers());
     X2GUIInterface*					ui = uiutil.X2UI();
     X2GUIExchangeInterface*			dx = NULL;//Comes after ui is loaded
-    char tmpBuf[SERIAL_BUFFER_SIZE];
+    char tmpBuf[TEXT_BUFFER_SIZE];
     bool bPressedOK = false;
     int nMaxSpeed = 0;
     int nPosition = 0;
@@ -279,31 +279,31 @@ int	X2Focuser::execModalSettingsDialog(void)
         else
             dx->setChecked("backlashEnable", false);
 
-        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getVoltage());
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getVoltage());
         dx->setPropertyString("voltage","text", tmpBuf);
 
-        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f A", m_PegasusUPB.getCurrent());
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f A", m_PegasusUPB.getCurrent());
         dx->setPropertyString("currentcurrent","text", tmpBuf);
 
-        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%d W", m_PegasusUPB.getPower());
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%d W", m_PegasusUPB.getPower());
         dx->setPropertyString("totalPower","text", tmpBuf);
 
-        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f ºC", m_PegasusUPB.getTemp());
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f ºC", m_PegasusUPB.getTemp());
         dx->setPropertyString("temperature","text", tmpBuf);
 
-        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%d %%", m_PegasusUPB.getHumidity());
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%d %%", m_PegasusUPB.getHumidity());
         dx->setPropertyString("humidity","text", tmpBuf);
 
-        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getDewPoint());
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getDewPoint());
         dx->setPropertyString("dewPoint","text", tmpBuf);
         
-        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(1)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(1));
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(1)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(1));
         dx->setPropertyString("port1Draw","text", tmpBuf);
-        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(2)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(2));
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(2)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(2));
         dx->setPropertyString("port2Draw","text", tmpBuf);
-        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(3)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(3));
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(3)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(3));
         dx->setPropertyString("port3Draw","text", tmpBuf);
-        snprintf(tmpBuf, SERIAL_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(4)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(4));
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(4)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(4));
         dx->setPropertyString("port4Draw","text", tmpBuf);
     }
     else {
@@ -400,7 +400,7 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
 {
     int nErr = SB_OK;
     int nTmpVal;
-    char szErrorMessage[LOG_BUFFER_SIZE];
+    char szErrorMessage[TEXT_BUFFER_SIZE];
 
     printf("Event = %s\n", pszEvent);
 
@@ -409,7 +409,7 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
         uiex->propertyInt("maxSpeed", "value", nTmpVal);
         nErr = m_PegasusUPB.setMotoMaxSpeed(nTmpVal);
         if(nErr) {
-            snprintf(szErrorMessage, LOG_BUFFER_SIZE, "Error setting max speed : Error %d", nErr);
+            snprintf(szErrorMessage, TEXT_BUFFER_SIZE, "Error setting max speed : Error %d", nErr);
             uiex->messageBox("Set Max Speed", szErrorMessage);
             return;
         }
@@ -419,7 +419,7 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
         uiex->propertyInt("newPos", "value", nTmpVal);
         nErr = m_PegasusUPB.syncMotorPosition(nTmpVal);
         if(nErr) {
-            snprintf(szErrorMessage, LOG_BUFFER_SIZE, "Error setting new position : Error %d", nErr);
+            snprintf(szErrorMessage, TEXT_BUFFER_SIZE, "Error setting new position : Error %d", nErr);
             uiex->messageBox("Set New Position", szErrorMessage);
             return;
         }
