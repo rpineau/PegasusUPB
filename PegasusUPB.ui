@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>516</width>
-    <height>705</height>
+    <height>837</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -61,7 +61,7 @@
      <widget class="QGroupBox" name="groupBox">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>8</x>
         <y>88</y>
         <width>281</width>
         <height>248</height>
@@ -291,7 +291,7 @@
       <property name="geometry">
        <rect>
         <x>290</x>
-        <y>640</y>
+        <y>672</y>
         <width>81</width>
         <height>32</height>
        </rect>
@@ -306,8 +306,8 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>380</x>
-        <y>640</y>
+        <x>384</x>
+        <y>672</y>
         <width>81</width>
         <height>32</height>
        </rect>
@@ -322,10 +322,10 @@
      <widget class="QGroupBox" name="groupBox_2">
       <property name="geometry">
        <rect>
-        <x>16</x>
+        <x>8</x>
         <y>344</y>
-        <width>464</width>
-        <height>168</height>
+        <width>472</width>
+        <height>208</height>
        </rect>
       </property>
       <property name="title">
@@ -335,7 +335,7 @@
        <property name="geometry">
         <rect>
          <x>8</x>
-         <y>40</y>
+         <y>72</y>
          <width>152</width>
          <height>24</height>
         </rect>
@@ -350,60 +350,60 @@
       <widget class="QCheckBox" name="checkBox">
        <property name="geometry">
         <rect>
-         <x>168</x>
-         <y>40</y>
-         <width>64</width>
+         <x>186</x>
+         <y>72</y>
+         <width>24</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
-        <string>Port 1</string>
+        <string/>
        </property>
       </widget>
       <widget class="QCheckBox" name="checkBox_2">
        <property name="geometry">
         <rect>
-         <x>240</x>
-         <y>40</y>
-         <width>64</width>
+         <x>258</x>
+         <y>72</y>
+         <width>24</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
-        <string>Port 2</string>
+        <string/>
        </property>
       </widget>
       <widget class="QCheckBox" name="checkBox_3">
        <property name="geometry">
         <rect>
-         <x>312</x>
-         <y>40</y>
-         <width>64</width>
+         <x>331</x>
+         <y>72</y>
+         <width>24</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
-        <string>Port 3</string>
+        <string/>
        </property>
       </widget>
       <widget class="QCheckBox" name="checkBox_4">
        <property name="geometry">
         <rect>
-         <x>384</x>
-         <y>40</y>
-         <width>64</width>
+         <x>403</x>
+         <y>72</y>
+         <width>24</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
-        <string>Port 4</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="label_6">
        <property name="geometry">
         <rect>
          <x>8</x>
-         <y>72</y>
+         <y>104</y>
          <width>152</width>
          <height>24</height>
         </rect>
@@ -418,60 +418,60 @@
       <widget class="QCheckBox" name="checkBox_5">
        <property name="geometry">
         <rect>
-         <x>168</x>
-         <y>72</y>
-         <width>64</width>
+         <x>186</x>
+         <y>104</y>
+         <width>24</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
-        <string>Port 1</string>
+        <string/>
        </property>
       </widget>
       <widget class="QCheckBox" name="checkBox_6">
        <property name="geometry">
         <rect>
-         <x>240</x>
-         <y>72</y>
-         <width>64</width>
+         <x>258</x>
+         <y>104</y>
+         <width>24</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
-        <string>Port 2</string>
+        <string/>
        </property>
       </widget>
       <widget class="QCheckBox" name="checkBox_7">
        <property name="geometry">
         <rect>
-         <x>312</x>
-         <y>72</y>
-         <width>64</width>
+         <x>331</x>
+         <y>104</y>
+         <width>24</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
-        <string>Port 3</string>
+        <string/>
        </property>
       </widget>
       <widget class="QCheckBox" name="checkBox_8">
        <property name="geometry">
         <rect>
-         <x>384</x>
-         <y>72</y>
-         <width>64</width>
+         <x>403</x>
+         <y>104</y>
+         <width>24</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
-        <string>Port 4</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="label_7">
        <property name="geometry">
         <rect>
          <x>8</x>
-         <y>104</y>
+         <y>136</y>
          <width>152</width>
          <height>24</height>
         </rect>
@@ -486,66 +486,181 @@
       <widget class="QLabel" name="port1Draw">
        <property name="geometry">
         <rect>
-         <x>184</x>
-         <y>104</y>
-         <width>48</width>
+         <x>168</x>
+         <y>136</y>
+         <width>56</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
         <string>00.0 A</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="port2Draw">
        <property name="geometry">
         <rect>
-         <x>256</x>
-         <y>104</y>
-         <width>48</width>
+         <x>240</x>
+         <y>136</y>
+         <width>56</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
         <string>00.0 A</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="port3Draw">
        <property name="geometry">
         <rect>
-         <x>328</x>
-         <y>104</y>
-         <width>48</width>
+         <x>312</x>
+         <y>136</y>
+         <width>56</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
         <string>00.0 A</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="port4Draw">
        <property name="geometry">
         <rect>
-         <x>400</x>
-         <y>104</y>
-         <width>48</width>
+         <x>384</x>
+         <y>136</y>
+         <width>56</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
         <string>00.0 A</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="label_10">
        <property name="geometry">
         <rect>
          <x>70</x>
-         <y>140</y>
+         <y>176</y>
          <width>380</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>If the current draw value turns read the port is in over current.</string>
+        <string>If the current draw value turns red the port is in over current.</string>
+       </property>
+      </widget>
+      <widget class="Line" name="line">
+       <property name="geometry">
+        <rect>
+         <x>232</x>
+         <y>72</y>
+         <width>3</width>
+         <height>80</height>
+        </rect>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_11">
+       <property name="geometry">
+        <rect>
+         <x>168</x>
+         <y>32</y>
+         <width>59</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Port 1</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_18">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>32</y>
+         <width>59</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Port 2</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_19">
+       <property name="geometry">
+        <rect>
+         <x>312</x>
+         <y>32</y>
+         <width>59</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Port 3</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="Line" name="line_2">
+       <property name="geometry">
+        <rect>
+         <x>304</x>
+         <y>72</y>
+         <width>3</width>
+         <height>80</height>
+        </rect>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_20">
+       <property name="geometry">
+        <rect>
+         <x>384</x>
+         <y>32</y>
+         <width>59</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Port 4</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="Line" name="line_3">
+       <property name="geometry">
+        <rect>
+         <x>376</x>
+         <y>72</y>
+         <width>3</width>
+         <height>80</height>
+        </rect>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
       </widget>
      </widget>
@@ -796,9 +911,9 @@
      <widget class="QGroupBox" name="groupBox_6">
       <property name="geometry">
        <rect>
-        <x>16</x>
-        <y>520</y>
-        <width>465</width>
+        <x>8</x>
+        <y>560</y>
+        <width>472</width>
         <height>96</height>
        </rect>
       </property>

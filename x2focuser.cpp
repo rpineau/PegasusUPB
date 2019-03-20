@@ -329,14 +329,14 @@ int	X2Focuser::execModalSettingsDialog(void)
         dx->setEnabled("radioButton", false);
         dx->setEnabled("radioButton_2", false);
         dx->setPropertyString("port1Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
-        dx->setPropertyString("port2Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">--.- A</span></p></body></html>");
-        dx->setPropertyString("port3Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">--.- A</span></p></body></html>");
-        dx->setPropertyString("port4Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">--.- A</span></p></body></html>");
+        dx->setPropertyString("port2Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
+        dx->setPropertyString("port3Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
+        dx->setPropertyString("port4Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
     }
 
     // test
-    dx->setPropertyString("port1Draw","text", "<html><head/><body><p><span style=\" color:#ff0000;\">00.0 A</span></p></body></html>");
-    dx->setPropertyString("port2Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">00.0 A</span></p></body></html>");
+    dx->setPropertyString("port1Draw","text", "<html><head/><body><p><span style=\" color:#ff0000;\">300.0 A</span></p></body></html>");
+    dx->setPropertyString("port2Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">2.0 A</span></p></body></html>");
 
     // linit is done in software so it's always enabled.
     dx->setEnabled("posLimit", true);
