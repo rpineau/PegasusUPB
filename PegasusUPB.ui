@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>516</width>
-    <height>837</height>
+    <height>743</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -259,7 +259,7 @@
      <widget class="QLabel" name="label_logo_2">
       <property name="geometry">
        <rect>
-        <x>170</x>
+        <x>118</x>
         <y>-8</y>
         <width>256</width>
         <height>90</height>
