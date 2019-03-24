@@ -102,24 +102,25 @@ typedef struct {
 } upbStatus;
 
 // field indexes in response for PA command
-#define upbVoltage      0
-#define upbCurrent      1
-#define upbPower        2
-#define upbTemp         3
-#define upbHumidity     4
-#define upbDewPoint     5
-#define upbPortStatus   6
-#define upbUsbStatus    7
-#define upbDew1PWM      8
-#define upbDew2PWM      9
-#define upbCurrentPort1 10
-#define upbCurrentPort2 11
-#define upbCurrentPort3 12
-#define upbCurrentPort4 13
-#define upbCurrentDew1  14
-#define upbCurrentDew2  15
-#define upbOvercurent   16
-#define upbAutodew      17
+#define upbDevice       0
+#define upbVoltage      1
+#define upbCurrent      2
+#define upbPower        3
+#define upbTemp         4
+#define upbHumidity     5
+#define upbDewPoint     6
+#define upbPortStatus   7
+#define upbUsbStatus    8
+#define upbDew1PWM      9
+#define upbDew2PWM      10
+#define upbCurrentPort1 11
+#define upbCurrentPort2 12
+#define upbCurrentPort3 13
+#define upbCurrentPort4 14
+#define upbCurrentDew1  15
+#define upbCurrentDew2  16
+#define upbOvercurent   17
+#define upbAutodew      18
 
 
 // field indexes in response for SA command

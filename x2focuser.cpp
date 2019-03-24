@@ -351,7 +351,7 @@ int	X2Focuser::execModalSettingsDialog(void)
     if ((nErr = ui->exec(bPressedOK)))
         return nErr;
 
-    //Retreive values from the user interface
+    //Retrieve values from the user interface
     if (bPressedOK) {
         nErr = SB_OK;
         // get limit option
@@ -537,7 +537,7 @@ int X2Focuser::focTemperature(double &dTemperature)
     X2MutexLocker ml(GetMutex());
 
     if(!m_bLinked) {
-        dTemperature = -100.0;
+        dTemperature = -100.0f;
         return NOT_CONNECTED;
     }
 

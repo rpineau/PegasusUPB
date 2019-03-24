@@ -293,7 +293,7 @@
         <x>290</x>
         <y>656</y>
         <width>81</width>
-        <height>32</height>
+        <height>24</height>
        </rect>
       </property>
       <property name="text">
@@ -309,7 +309,7 @@
         <x>384</x>
         <y>656</y>
         <width>81</width>
-        <height>32</height>
+        <height>24</height>
        </rect>
       </property>
       <property name="text">

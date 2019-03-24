@@ -42,6 +42,7 @@ CPegasusUPB::CPegasusUPB()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_24_1500.\n", timestamp);
     fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -244,7 +245,7 @@ int CPegasusUPB::getStatus(int &nStatus)
     if(nErr)
         return nErr;
 
-    if(strstr(szResp,"OK_")) {
+    if(strstr(szResp,"_OK")) {
         if(strstr(szResp,"UPB")) {
             m_globalStatus.nDeviceType = UPB;
         }
@@ -290,6 +291,18 @@ int CPegasusUPB::getStepperStatus()
     m_globalStatus.focuser.bMoving = std::stoi(m_svParsedRespForSA[upbFMotorState]) == 1?true:false;
     m_globalStatus.focuser.bReverse = std::stoi(m_svParsedRespForSA[upbFMotorInvert] )== 1?true:false;
     m_globalStatus.focuser.nBacklash = std::stoi(m_svParsedRespForSA[upbFBacklash]);
+
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::getStepperStatus] nCurPos = %d\n", timestamp, m_globalStatus.focuser.nCurPos);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getStepperStatus] bMoving = %s\n", timestamp, m_globalStatus.focuser.bMoving?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getStepperStatus] bReverse = %s\n", timestamp, m_globalStatus.focuser.bReverse?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getStepperStatus] nBacklash = %d\n", timestamp, m_globalStatus.focuser.nBacklash);
+    fflush(Logfile);
+#endif
+    
 
     return nErr;
 }
@@ -360,6 +373,34 @@ int CPegasusUPB::getConsolidatedStatus()
         return UPB_BAD_CMD_RESPONSE;
     }
 
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s][CPegasusUPB::getConsolidatedStatus] converting value and setting them in m_globalStatus\n", timestamp);
+    fflush(Logfile);
+#endif
+
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s][CPegasusUPB::getConsolidatedStatus] m_svParsedRespForPA[upbDevice] = %s \n", timestamp, m_svParsedRespForPA[upbDevice].c_str());
+    fflush(Logfile);
+    fprintf(Logfile, "[%s][CPegasusUPB::getConsolidatedStatus] m_svParsedRespForPA[upbVoltage] = %s \n", timestamp, m_svParsedRespForPA[upbVoltage].c_str());
+    fflush(Logfile);
+    fprintf(Logfile, "[%s][CPegasusUPB::getConsolidatedStatus] m_svParsedRespForPA[upbCurrent] = %s \n", timestamp, m_svParsedRespForPA[upbCurrent].c_str());
+    fflush(Logfile);
+    fprintf(Logfile, "[%s][CPegasusUPB::getConsolidatedStatus] m_svParsedRespForPA[upbPower] = %s \n", timestamp, m_svParsedRespForPA[upbPower].c_str());
+    fflush(Logfile);
+    fprintf(Logfile, "[%s][CPegasusUPB::getConsolidatedStatus] m_svParsedRespForPA[upbTemp] = %s \n", timestamp, m_svParsedRespForPA[upbTemp].c_str());
+    fflush(Logfile);
+    fprintf(Logfile, "[%s][CPegasusUPB::getConsolidatedStatus] m_svParsedRespForPA[upbHumidity] = %s \n", timestamp, m_svParsedRespForPA[upbHumidity].c_str());
+    fflush(Logfile);
+    fprintf(Logfile, "[%s][CPegasusUPB::getConsolidatedStatus] m_svParsedRespForPA[upbDewPoint] = %s \n", timestamp, m_svParsedRespForPA[upbDewPoint].c_str());
+    fflush(Logfile);
+#endif
+
     m_globalStatus.fVoltage = std::stof(m_svParsedRespForPA[upbVoltage]);
     m_globalStatus.fCurent = std::stof(m_svParsedRespForPA[upbCurrent]);
     m_globalStatus.nPower = std::stoi(m_svParsedRespForPA[upbPower]);
@@ -367,14 +408,48 @@ int CPegasusUPB::getConsolidatedStatus()
     m_globalStatus.nHumidity = std::stoi(m_svParsedRespForPA[upbHumidity]);
     m_globalStatus.fDewPoint = std::stof(m_svParsedRespForPA[upbDewPoint]);
 
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] fVoltage = %3.2f\n", timestamp, m_globalStatus.fVoltage);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] fCurent = %3.2f\n", timestamp, m_globalStatus.fCurent);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nPower = %d\n", timestamp, m_globalStatus.nPower);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] fTemp = %3.2f\n", timestamp, m_globalStatus.fTemp);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nHumidity = %d\n", timestamp, m_globalStatus.nHumidity);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] fDewPoint = %3.2f\n", timestamp, m_globalStatus.fDewPoint);
+    fflush(Logfile);
+#endif
+
+    
     nPortStatus = std::stoi(m_svParsedRespForPA[upbPortStatus]);
     m_globalStatus.bPort1On = (nPortStatus & 1)      == 1? true : false;
     m_globalStatus.bPort2On = (nPortStatus & 2) >> 1 == 1? true : false;
     m_globalStatus.bPort3On = (nPortStatus & 4) >> 2 == 1? true : false;
     m_globalStatus.bPort4On = (nPortStatus & 8) >> 3 == 1? true : false;
 
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nPortStatus = %d\n", timestamp, nPortStatus);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bPort1On = %s\n", timestamp, m_globalStatus.bPort1On?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bPort2On = %s\n", timestamp, m_globalStatus.bPort2On?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bPort3On = %s\n", timestamp, m_globalStatus.bPort3On?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bPort4On = %s\n", timestamp, m_globalStatus.bPort4On?"Yes":"No");
+    fflush(Logfile);
+#endif
+
     nUsbPortOff = std::stoi(m_svParsedRespForPA[upbUsbStatus]);
     m_globalStatus.bUsbPortOff = std::stoi(m_svParsedRespForPA[upbUsbStatus]) == 1 ? true: false;
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nUsbPortOff = %d\n", timestamp, nUsbPortOff);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bUsbPortOff = %s\n", timestamp, m_globalStatus.bUsbPortOff?"Yes":"No");
+    fflush(Logfile);
+#endif
 
     m_globalStatus.nDew1PWM = std::stoi(m_svParsedRespForPA[upbDew1PWM]);
     m_globalStatus.nDew2PWM = std::stoi(m_svParsedRespForPA[upbDew2PWM]);
@@ -387,19 +462,72 @@ int CPegasusUPB::getConsolidatedStatus()
     m_globalStatus.fCurrentDew1 = std::stof(m_svParsedRespForPA[upbCurrentDew1]);
     m_globalStatus.fCurrentDew2 = std::stof(m_svParsedRespForPA[upbCurrentDew2]);
 
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nDew1PWM = %d\n", timestamp, m_globalStatus.nDew1PWM);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nDew2PWM = %d\n", timestamp, m_globalStatus.nDew2PWM);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] fCurrentPort1 = %3.2f\n", timestamp, m_globalStatus.fCurrentPort1);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] fCurrentPort2 = %3.2f\n", timestamp, m_globalStatus.fCurrentPort2);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] fCurrentPort3 = %3.2f\n", timestamp, m_globalStatus.fCurrentPort3);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] fCurrentPort4 = %3.2f\n", timestamp, m_globalStatus.fCurrentPort4);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] fCurrentDew1 = %3.2f\n", timestamp, m_globalStatus.fCurrentDew1);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] fCurrentDew2 = %3.2f\n", timestamp, m_globalStatus.fCurrentDew2);
+    fflush(Logfile);
+#endif
+
     nOvercurrentStatus = std::stoi(m_svParsedRespForPA[upbOvercurent]);
     m_globalStatus.bOverCurrentPort1 = (nPortStatus & 1)      == 1? true : false;
-    m_globalStatus.bOverCurrentPort1 = (nPortStatus & 2) >> 1 == 1? true : false;
-    m_globalStatus.bOverCurrentPort1 = (nPortStatus & 4) >> 2 == 1? true : false;
-    m_globalStatus.bOverCurrentPort1 = (nPortStatus & 8) >> 3 == 1? true : false;
+    m_globalStatus.bOverCurrentPort2 = (nPortStatus & 2) >> 1 == 1? true : false;
+    m_globalStatus.bOverCurrentPort3 = (nPortStatus & 4) >> 2 == 1? true : false;
+    m_globalStatus.bOverCurrentPort4 = (nPortStatus & 8) >> 3 == 1? true : false;
 
     m_globalStatus.bOverCurrentDew1 = (nPortStatus & 16) >> 4 == 1? true : false;
-    m_globalStatus.bOverCurrentDew1 = (nPortStatus & 32) >> 5 == 1? true : false;
+    m_globalStatus.bOverCurrentDew2 = (nPortStatus & 32) >> 5 == 1? true : false;
 
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nOvercurrentStatus = %d\n", timestamp, nOvercurrentStatus);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bOverCurrentPort1 = %s\n", timestamp, m_globalStatus.bOverCurrentPort1?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bOverCurrentPort2 = %s\n", timestamp, m_globalStatus.bOverCurrentPort2?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bOverCurrentPort3 = %s\n", timestamp, m_globalStatus.bOverCurrentPort3?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bOverCurrentPort4 = %s\n", timestamp, m_globalStatus.bOverCurrentPort4?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bOverCurrentDew1 = %s\n", timestamp, m_globalStatus.bOverCurrentDew1?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bOverCurrentDew2 = %s\n", timestamp, m_globalStatus.bOverCurrentDew2?"Yes":"No");
+    fflush(Logfile);
+#endif
+
+    
     m_globalStatus.bAutoDew = std::stoi(m_svParsedRespForPA[upbAutodew]) == 1 ? true : false;
+
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bAutoDew = %s\n", timestamp, m_globalStatus.bAutoDew?"Yes":"No");
+    fflush(Logfile);
+#endif
+
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] Getting on boot power port status\n", timestamp);
+    fflush(Logfile);
+#endif
 
     nErr = getOnBootPowerState();
 
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] All data collected\n", timestamp);
+    fflush(Logfile);
+#endif
     return nErr;
 }
 
@@ -408,6 +536,8 @@ int CPegasusUPB::getOnBootPowerState()
     int nErr = PB_OK;
     char szResp[SERIAL_BUFFER_SIZE];
     int nTmp;
+    std::vector<std::string> sParsedResp;
+
     if(!m_bIsConnected)
         return ERR_COMMNOLINK;
 
@@ -417,11 +547,26 @@ int CPegasusUPB::getOnBootPowerState()
         return nErr;
 
     // parse response
-    nTmp = atoi(szResp);
+    nErr = parseResp(szResp, sParsedResp);
+    nTmp = atoi(sParsedResp[1].c_str());
+
     m_globalStatus.bOnBootPort1On = (nTmp & 1)      == 1? true : false;
     m_globalStatus.bOnBootPort2On = (nTmp & 2) >> 1 == 1? true : false;
     m_globalStatus.bOnBootPort3On = (nTmp & 4) >> 2 == 1? true : false;
     m_globalStatus.bOnBootPort4On = (nTmp & 8) >> 3 == 1? true : false;
+
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::getOnBootPowerState] nTmp = %d\n", timestamp, nTmp);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getOnBootPowerState] bOnBootPort1On = %s\n", timestamp, m_globalStatus.bOnBootPort1On?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getOnBootPowerState] bOnBootPort2On = %s\n", timestamp, m_globalStatus.bOnBootPort2On?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getOnBootPowerState] bOnBootPort3On = %s\n", timestamp, m_globalStatus.bOnBootPort3On?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getOnBootPowerState] bOnBootPort4On = %s\n", timestamp, m_globalStatus.bOnBootPort4On?"Yes":"No");
+    fflush(Logfile);
+#endif
+
     return nErr;
 }
 
@@ -439,6 +584,13 @@ int CPegasusUPB::getMotoMaxSpeed(int &nSpeed)
 
     // parse response
     nSpeed = atoi(szResp);
+#ifdef PEGA_DEBUG
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPB::getMotoMaxSpeed] nSpeed = %d\n", timestamp, nSpeed);
+    fflush(Logfile);
+#endif
 
     return nErr;
 }
@@ -474,7 +626,8 @@ int CPegasusUPB::setBacklashComp(int nSteps)
 {
     int nErr = PB_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
-	
+    char szResp[SERIAL_BUFFER_SIZE];
+
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
@@ -482,12 +635,12 @@ int CPegasusUPB::setBacklashComp(int nSteps)
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] CPegasusUPB::setBacklashComp setting backlash comp : %s\n", timestamp, szCmd);
+    fprintf(Logfile, "[%s] CPegasusUPB::setBacklashComp setting backlash comp\n", timestamp);
     fflush(Logfile);
 #endif
 
     sprintf(szCmd,"SB:%d\n", nSteps);
-    nErr = upbCommand(szCmd, NULL, 0);
+    nErr = upbCommand(szCmd, szResp, 0);
     if(!nErr)
         m_globalStatus.focuser.nBacklash = nSteps;
 
@@ -527,7 +680,11 @@ int CPegasusUPB::getTemperature(double &dTemperature)
         return nErr;
 
     // convert response
-    dTemperature = atof(szResp);
+    if(strstr(szResp,"nan")) {
+        dTemperature = -100.0f;
+    }
+    else
+        dTemperature = atof(szResp);
 
     return nErr;
 }
