@@ -335,8 +335,8 @@ int	X2Focuser::execModalSettingsDialog(void)
     }
 
     // test
-    dx->setPropertyString("port1Draw","text", "<html><head/><body><p><span style=\" color:#ff0000;\">300.0 A</span></p></body></html>");
-    dx->setPropertyString("port2Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">2.0 A</span></p></body></html>");
+    // dx->setPropertyString("port1Draw","text", "<html><head/><body><p><span style=\" color:#ff0000;\">300.0 A</span></p></body></html>");
+    // dx->setPropertyString("port2Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">2.0 A</span></p></body></html>");
 
     // linit is done in software so it's always enabled.
     dx->setEnabled("posLimit", true);
