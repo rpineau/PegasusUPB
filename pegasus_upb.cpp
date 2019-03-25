@@ -101,7 +101,11 @@ int CPegasusUPB::Connect(const char *pszPort)
 #endif
     nErr = getDeviceType(nDevice);
     if(nErr) {
-		m_bIsConnected = false;
+        if(nDevice != UPB) {
+            m_pSerx->close();
+            m_bIsConnected = false;
+            nErr = ERR_DEVICENOTSUPPORTED;
+        }
 #ifdef PEGA_DEBUG
 		ltime = time(NULL);
 		timestamp = asctime(localtime(&ltime));
@@ -251,6 +255,11 @@ int CPegasusUPB::getStatus(int &nStatus)
         }
         else if(strstr(szResp,"PPB")) {
             m_globalStatus.nDeviceType = PPB;
+        }
+        else {
+            nStatus = UPB_BAD_CMD_RESPONSE;
+            m_globalStatus.nDeviceType = NONE;
+            return ERR_DEVICENOTSUPPORTED;
         }
         nStatus = PB_OK;
         nErr = PB_OK;
@@ -782,6 +791,8 @@ int CPegasusUPB::getDeviceType(int &nDevice)
         return ERR_COMMNOLINK;
 
     nErr = getStatus(nStatus);
+    nDevice = m_globalStatus.nDeviceType;
+    
     return nErr;
 }
 
