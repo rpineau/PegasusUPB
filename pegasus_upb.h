@@ -192,14 +192,22 @@ public:
     float       getDewPoint();
 
     bool        getPortOn(const int &nPortNumber);
+    int         setPortOn(const int &nPortNumber, const bool &bEnabled);
     float       getPortCurrent(const int &nPortNumber);
     bool        getOnBootPortOn(const int &nPortNumber);
+    int         setOnBootPortOn(const int &nPortNumber, const bool &bEnable);
     bool        isOverCurrentPort(const int &nPortNumber);
+
+    int         setUsbOn(const bool &bEnable);
+    bool        getUsbOn(void);
+    
+    int         setDewHeaterPWM(const int &nDewHeater, const int &nPWM);
+    int         getDewHeaterPWM(const int &nDewHeater);
 
 protected:
 
-    int             upbCommand(const char *pszCmd, char *pszResult, int nResultMaxLen);
-    int             readResponse(char *pszRespBuffer, int nBufferLen);
+    int             upbCommand(const char *pszCmd, char *pszResult, unsigned long nResultMaxLen);
+    int             readResponse(char *pszRespBuffer, unsigned long nBufferLen);
     int             parseResp(char *pszResp, std::vector<std::string>  &sParsedRes);
 
 

@@ -219,7 +219,6 @@ int	X2Focuser::execModalSettingsDialog(void)
     int nPosLimit = 0;
     int nBacklashSteps = 0;
     bool bBacklashEnabled = false;
-    int nPegasusDeviceType = NONE;
     bool bReverse = false;
 
     if (NULL == ui)
@@ -239,7 +238,7 @@ int	X2Focuser::execModalSettingsDialog(void)
         m_PegasusUPB.getConsolidatedStatus();
         // enable all controls
 
-        // motor max spped
+        // motor max speed
         nErr = m_PegasusUPB.getMotoMaxSpeed(nMaxSpeed);
         if(nErr)
             return nErr;
@@ -279,6 +278,11 @@ int	X2Focuser::execModalSettingsDialog(void)
         else
             dx->setChecked("backlashEnable", false);
 
+        // USB
+        dx->setChecked("radioButton", m_PegasusUPB.getUsbOn());
+        dx->setChecked("radioButton_2", !m_PegasusUPB.getUsbOn());
+        
+        // Controller value
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getVoltage());
         dx->setPropertyString("voltage","text", tmpBuf);
 
@@ -296,7 +300,18 @@ int	X2Focuser::execModalSettingsDialog(void)
 
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getDewPoint());
         dx->setPropertyString("dewPoint","text", tmpBuf);
-        
+
+        // ports status
+        dx->setChecked("checkBox", m_PegasusUPB.getPortOn(1));
+        dx->setChecked("checkBox_2", m_PegasusUPB.getPortOn(2));
+        dx->setChecked("checkBox_3", m_PegasusUPB.getPortOn(3));
+        dx->setChecked("checkBox_4", m_PegasusUPB.getPortOn(4));
+
+        dx->setChecked("checkBox_5", m_PegasusUPB.getOnBootPortOn(1));
+        dx->setChecked("checkBox_6", m_PegasusUPB.getOnBootPortOn(2));
+        dx->setChecked("checkBox_7", m_PegasusUPB.getOnBootPortOn(3));
+        dx->setChecked("checkBox_8", m_PegasusUPB.getOnBootPortOn(4));
+
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(1)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(1));
         dx->setPropertyString("port1Draw","text", tmpBuf);
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(2)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(2));
@@ -305,6 +320,9 @@ int	X2Focuser::execModalSettingsDialog(void)
         dx->setPropertyString("port3Draw","text", tmpBuf);
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(4)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(4));
         dx->setPropertyString("port4Draw","text", tmpBuf);
+        
+        dx->setPropertyInt("dewHeaterA", "value", m_PegasusUPB.getDewHeaterPWM(1));
+        dx->setPropertyInt("dewHeaterB", "value", m_PegasusUPB.getDewHeaterPWM(2));
     }
     else {
         // disable unsued controls when not connected
@@ -318,6 +336,10 @@ int	X2Focuser::execModalSettingsDialog(void)
         dx->setEnabled("backlashSteps", false);
         dx->setPropertyInt("backlashSteps", "value", 0);
         dx->setEnabled("backlashEnable", false);
+
+        dx->setEnabled("radioButton", false);
+        dx->setEnabled("radioButton_2", false);
+
         dx->setEnabled("checkBox", false);
         dx->setEnabled("checkBox_2", false);
         dx->setEnabled("checkBox_3", false);
@@ -326,17 +348,14 @@ int	X2Focuser::execModalSettingsDialog(void)
         dx->setEnabled("checkBox_6", false);
         dx->setEnabled("checkBox_7", false);
         dx->setEnabled("checkBox_8", false);
-        dx->setEnabled("radioButton", false);
-        dx->setEnabled("radioButton_2", false);
         dx->setPropertyString("port1Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
         dx->setPropertyString("port2Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
         dx->setPropertyString("port3Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
         dx->setPropertyString("port4Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
-    }
 
-    // test
-    // dx->setPropertyString("port1Draw","text", "<html><head/><body><p><span style=\" color:#ff0000;\">300.0 A</span></p></body></html>");
-    // dx->setPropertyString("port2Draw","text", "<html><head/><body><p><span style=\" color:#00ff00;\">2.0 A</span></p></body></html>");
+        dx->setEnabled("dewHeaterA", false);
+        dx->setEnabled("dewHeaterB", false);
+    }
 
     // linit is done in software so it's always enabled.
     dx->setEnabled("posLimit", true);
@@ -401,11 +420,26 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
     int nErr = SB_OK;
     int nTmpVal;
     char szErrorMessage[TEXT_BUFFER_SIZE];
+    char tmpBuf[TEXT_BUFFER_SIZE];
 
-    printf("Event = %s\n", pszEvent);
-
+    printf("pszEvent = %s\n", pszEvent);
+    
+    if(!m_bLinked)
+        return;
+    
+    if (!strcmp(pszEvent, "on_timer")) {
+        m_PegasusUPB.getConsolidatedStatus();
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(1)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(1));
+        uiex->setPropertyString("port1Draw","text", tmpBuf);
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(2)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(2));
+        uiex->setPropertyString("port2Draw","text", tmpBuf);
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(3)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(3));
+        uiex->setPropertyString("port3Draw","text", tmpBuf);
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(4)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(4));
+        uiex->setPropertyString("port4Draw","text", tmpBuf);
+    }
     // max speed
-    if (!strcmp(pszEvent, "on_pushButton_clicked")) {
+    else if (!strcmp(pszEvent, "on_pushButton_clicked")) {
         uiex->propertyInt("maxSpeed", "value", nTmpVal);
         nErr = m_PegasusUPB.setMotoMaxSpeed(nTmpVal);
         if(nErr) {
@@ -424,8 +458,48 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
             return;
         }
     }
-
-
+    // USB On/Off
+    else if (!strcmp(pszEvent, "on_radioButton_clicked")) {
+        m_PegasusUPB.setUsbOn(true);
+    }
+    else if (!strcmp(pszEvent, "on_radioButton_2_clicked")) {
+        m_PegasusUPB.setUsbOn(false);
+    }
+    // port On/Off
+    else if (!strcmp(pszEvent, "on_checkBox_stateChanged")) {
+        uiex->isChecked("checkBox") == 1 ? m_PegasusUPB.setPortOn(1, true) : m_PegasusUPB.setPortOn(1, false);
+    }
+    else if (!strcmp(pszEvent, "on_checkBox_2_stateChanged")) {
+        uiex->isChecked("checkBox_2") == 1 ? m_PegasusUPB.setPortOn(2, true) : m_PegasusUPB.setPortOn(2, false);
+    }
+    else if (!strcmp(pszEvent, "on_checkBox_3_stateChanged")) {
+        uiex->isChecked("checkBox_3") == 1 ? m_PegasusUPB.setPortOn(3, true) : m_PegasusUPB.setPortOn(3, false);
+    }
+    else if (!strcmp(pszEvent, "on_checkBox_4_stateChanged")) {
+        uiex->isChecked("checkBox_4") == 1 ? m_PegasusUPB.setPortOn(4, true) : m_PegasusUPB.setPortOn(4, false);
+    }
+    // Port state on boot
+    else if (!strcmp(pszEvent, "on_checkBox_5_stateChanged")) {
+        m_PegasusUPB.setOnBootPortOn(1, uiex->isChecked("checkBox_4"));
+    }
+    else if (!strcmp(pszEvent, "on_checkBox_6_stateChanged")) {
+        m_PegasusUPB.setOnBootPortOn(2, uiex->isChecked("checkBox_4"));
+    }
+    else if (!strcmp(pszEvent, "on_checkBox_7_stateChanged")) {
+        m_PegasusUPB.setOnBootPortOn(3, uiex->isChecked("checkBox_4"));
+    }
+    else if (!strcmp(pszEvent, "on_checkBox_8_stateChanged")) {
+        m_PegasusUPB.setOnBootPortOn(4, uiex->isChecked("checkBox_4"));
+    }
+    // Set Dew A/B PWM
+    else if (!strcmp(pszEvent, "on_pushButton_3_clicked")) {
+        uiex->propertyInt("dewHeaterA", "value", nTmpVal);
+        m_PegasusUPB.setDewHeaterPWM(1, nTmpVal);
+    }
+    else if (!strcmp(pszEvent, "on_pushButton_4_clicked")) {
+        uiex->propertyInt("dewHeaterB", "value", nTmpVal);
+        m_PegasusUPB.setDewHeaterPWM(2, nTmpVal);
+    }
 }
 
 #pragma mark - FocuserGotoInterface2

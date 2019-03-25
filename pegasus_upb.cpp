@@ -42,7 +42,7 @@ CPegasusUPB::CPegasusUPB()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_24_1500.\n", timestamp);
+    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_24_2030.\n", timestamp);
     fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -640,7 +640,7 @@ int CPegasusUPB::setBacklashComp(int nSteps)
 #endif
 
     sprintf(szCmd,"SB:%d\n", nSteps);
-    nErr = upbCommand(szCmd, szResp, 0);
+    nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
     if(!nErr)
         m_globalStatus.focuser.nBacklash = nSteps;
 
@@ -845,7 +845,7 @@ int CPegasusUPB::setReverseEnable(bool bEnabled)
 
 int CPegasusUPB::getReverseEnable(bool &bEnabled)
 {
-    int nErr;
+    int nErr = PB_OK;
 	
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
@@ -912,6 +912,39 @@ bool CPegasusUPB::getPortOn(const int &nPortNumber)
     }
 }
 
+int CPegasusUPB::setPortOn(const int &nPortNumber, const bool &bEnabled)
+{
+    int nErr = PB_OK;
+    char szCmd[SERIAL_BUFFER_SIZE];
+    char szResp[SERIAL_BUFFER_SIZE];
+
+    switch(nPortNumber) {
+        case 1:
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P1:%d", bEnabled?1:0);
+            m_globalStatus.bPort1On = bEnabled;
+            break;
+        case 2:
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P2:%d", bEnabled?1:0);
+            m_globalStatus.bPort2On = bEnabled;
+            break;
+        case 3:
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P3:%d", bEnabled?1:0);
+            m_globalStatus.bPort3On = bEnabled;
+            break;
+        case 4:
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P4:%d", bEnabled?1:0);
+            m_globalStatus.bPort4On = bEnabled;
+            break;
+        default:
+            return ERR_CMDFAILED;
+            break;
+    }
+
+    nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
+
+    return nErr;
+}
+
 
 float CPegasusUPB::getPortCurrent(const int &nPortNumber)
 {
@@ -964,6 +997,48 @@ bool CPegasusUPB::getOnBootPortOn(const int &nPortNumber)
     }
 }
 
+int CPegasusUPB::setOnBootPortOn(const int &nPortNumber, const bool &bEnable)
+{
+    int nErr = PB_OK;
+    char szCmd[SERIAL_BUFFER_SIZE];
+    char szResp[SERIAL_BUFFER_SIZE];
+    std::string sPorts;
+    
+    switch(nPortNumber) {
+        case 1:
+            m_globalStatus.bOnBootPort1On = bEnable;
+            break;
+            
+        case 2:
+            m_globalStatus.bOnBootPort2On = bEnable;
+            break;
+            
+        case 3:
+            m_globalStatus.bOnBootPort3On = bEnable;
+            break;
+            
+        case 4:
+            m_globalStatus.bOnBootPort4On = bEnable;
+            break;
+            
+        default:
+            return false;
+            break;
+    }
+
+    sPorts.empty();
+    sPorts += m_globalStatus.bOnBootPort1On? "1" : "0";
+    sPorts += m_globalStatus.bOnBootPort2On? "1" : "0";
+    sPorts += m_globalStatus.bOnBootPort3On? "1" : "0";
+    sPorts += m_globalStatus.bOnBootPort4On? "1" : "0";
+
+    snprintf(szCmd, SERIAL_BUFFER_SIZE, "PE:%s\n", sPorts.c_str());
+    nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
+    
+    return nErr;
+}
+
+
 bool CPegasusUPB::isOverCurrentPort(const int &nPortNumber)
 {
     switch(nPortNumber) {
@@ -989,9 +1064,70 @@ bool CPegasusUPB::isOverCurrentPort(const int &nPortNumber)
     }
 }
 
+
+int CPegasusUPB::setUsbOn(const bool &bEnable)
+{
+    int nErr = PB_OK;
+    char szCmd[SERIAL_BUFFER_SIZE];
+    char szResp[SERIAL_BUFFER_SIZE];
+
+    snprintf(szCmd, SERIAL_BUFFER_SIZE, "PE:%s\n", bEnable?"1":"0");
+    nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
+    if(nErr)
+        return nErr;
+    m_globalStatus.bUsbPortOff = !bEnable;
+    return nErr;
+}
+
+bool CPegasusUPB::getUsbOn(void)
+{
+    return !m_globalStatus.bUsbPortOff;
+}
+
+int CPegasusUPB::setDewHeaterPWM(const int &nDewHeater, const int &nPWM)
+{
+    int nErr = PB_OK;
+    char szCmd[SERIAL_BUFFER_SIZE];
+    char szResp[SERIAL_BUFFER_SIZE];
+
+    switch(nDewHeater) {
+        case 1:
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P5:%d\n", nPWM);
+            m_globalStatus.nDew1PWM = nPWM;
+            break;
+        case 2:
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P6:%d\n", nPWM);
+            m_globalStatus.nDew2PWM = nPWM;
+            break;
+        default:
+            return ERR_CMDFAILED;
+            break;
+    }
+
+    nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
+    return nErr;
+}
+
+int CPegasusUPB::getDewHeaterPWM(const int &nDewHeater)
+{
+    switch(nDewHeater) {
+        case 1:
+            return m_globalStatus.nDew1PWM;
+            break;
+        case 2:
+            return m_globalStatus.nDew2PWM;
+            break;
+        default:
+            return -1;
+            break;
+    }
+    
+}
+
+
 #pragma mark command and response functions
 
-int CPegasusUPB::upbCommand(const char *pszszCmd, char *pszResult, int nResultMaxLen)
+int CPegasusUPB::upbCommand(const char *pszszCmd, char *pszResult, unsigned long nResultMaxLen)
 {
     int nErr = PB_OK;
     char szResp[SERIAL_BUFFER_SIZE];
@@ -1042,7 +1178,7 @@ int CPegasusUPB::upbCommand(const char *pszszCmd, char *pszResult, int nResultMa
     return nErr;
 }
 
-int CPegasusUPB::readResponse(char *pszRespBuffer, int nBufferLen)
+int CPegasusUPB::readResponse(char *pszRespBuffer, unsigned long nBufferLen)
 {
     int nErr = PB_OK;
     unsigned long ulBytesRead = 0;
