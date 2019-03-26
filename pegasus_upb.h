@@ -204,6 +204,9 @@ public:
     int         setDewHeaterPWM(const int &nDewHeater, const int &nPWM);
     int         getDewHeaterPWM(const int &nDewHeater);
 
+    int         setAutoDewOn(const bool &bOn);
+    bool        isAutoDewOn();
+
 protected:
 
     int             upbCommand(const char *pszCmd, char *pszResult, unsigned long nResultMaxLen);

@@ -324,7 +324,15 @@ int	X2Focuser::execModalSettingsDialog(void)
         
         dx->setPropertyInt("dewHeaterA", "value", m_PegasusUPB.getDewHeaterPWM(1));
         dx->setPropertyInt("dewHeaterB", "value", m_PegasusUPB.getDewHeaterPWM(2));
-
+        dx->setChecked("checkBox_9", m_PegasusUPB.isAutoDewOn());
+        if(m_PegasusUPB.isAutoDewOn()) {
+            dx->setEnabled("dewHeaterA", false);
+            dx->setEnabled("dewHeaterB", false);
+        }
+        else {
+            dx->setEnabled("dewHeaterA", true);
+            dx->setEnabled("dewHeaterB", true);
+        }
         // LED
         m_PegasusUPB.getLedStatus(nLedStatus);
         dx->setChecked("radioButton_3", nLedStatus==ON?true:false);
@@ -361,6 +369,12 @@ int	X2Focuser::execModalSettingsDialog(void)
 
         dx->setEnabled("dewHeaterA", false);
         dx->setEnabled("dewHeaterB", false);
+        dx->setEnabled("pushButton_3", false);
+        dx->setEnabled("pushButton_4", false);
+        dx->setEnabled("checkBox_9", false);
+        
+        dx->setEnabled("radioButton_3", false);
+        dx->setEnabled("radioButton_4", false);
     }
 
     // linit is done in software so it's always enabled.
@@ -497,7 +511,7 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
     else if (!strcmp(pszEvent, "on_checkBox_8_stateChanged")) {
         m_PegasusUPB.setOnBootPortOn(4, uiex->isChecked("checkBox_4"));
     }
-    // Set Dew A/B PWM
+    // Set Dew A/B PWM and Auto Dew
     else if (!strcmp(pszEvent, "on_pushButton_3_clicked")) {
         uiex->propertyInt("dewHeaterA", "value", nTmpVal);
         m_PegasusUPB.setDewHeaterPWM(1, nTmpVal);
@@ -506,6 +520,25 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
         uiex->propertyInt("dewHeaterB", "value", nTmpVal);
         m_PegasusUPB.setDewHeaterPWM(2, nTmpVal);
     }
+    else if (!strcmp(pszEvent, "on_checkBox_9_stateChanged")) {
+        m_PegasusUPB.setAutoDewOn(uiex->isChecked("checkBox_4"));
+        if(uiex->isChecked("checkBox_4")) {
+            uiex->setEnabled("dewHeaterA", false);
+            uiex->setEnabled("dewHeaterB", false);
+        }
+        else {
+            uiex->setEnabled("dewHeaterA", true);
+            uiex->setEnabled("dewHeaterB", true);
+        }
+    }
+    // LED On/Off
+    else if (!strcmp(pszEvent, "on_radioButton_3_clicked")) {
+        m_PegasusUPB.setLedStatus(ON);
+    }
+    else if (!strcmp(pszEvent, "on_radioButton_4_clicked")) {
+        m_PegasusUPB.setLedStatus(OFF);
+    }
+
 }
 
 #pragma mark - FocuserGotoInterface2

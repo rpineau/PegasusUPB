@@ -42,7 +42,7 @@ CPegasusUPB::CPegasusUPB()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_24_2030.\n", timestamp);
+    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_26_1630.\n", timestamp);
     fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -1132,8 +1132,28 @@ int CPegasusUPB::getDewHeaterPWM(const int &nDewHeater)
             return -1;
             break;
     }
-    
 }
+
+int CPegasusUPB::setAutoDewOn(const bool &bOn)
+{
+    int nErr = PB_OK;
+    char szCmd[SERIAL_BUFFER_SIZE];
+    char szResp[SERIAL_BUFFER_SIZE];
+
+    snprintf(szCmd, SERIAL_BUFFER_SIZE, "PD:%s\n", bOn?"1":"0");
+    nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
+    if(nErr)
+        return nErr;
+    m_globalStatus.bAutoDew = bOn;
+    return nErr;
+}
+
+
+bool CPegasusUPB::isAutoDewOn()
+{
+    return m_globalStatus.bAutoDew;
+}
+
 
 
 #pragma mark command and response functions
