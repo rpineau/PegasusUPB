@@ -220,6 +220,7 @@ int	X2Focuser::execModalSettingsDialog(void)
     int nBacklashSteps = 0;
     bool bBacklashEnabled = false;
     bool bReverse = false;
+    int nLedStatus;
 
     if (NULL == ui)
         return ERR_POINTER;
@@ -323,6 +324,11 @@ int	X2Focuser::execModalSettingsDialog(void)
         
         dx->setPropertyInt("dewHeaterA", "value", m_PegasusUPB.getDewHeaterPWM(1));
         dx->setPropertyInt("dewHeaterB", "value", m_PegasusUPB.getDewHeaterPWM(2));
+
+        // LED
+        m_PegasusUPB.getLedStatus(nLedStatus);
+        dx->setChecked("radioButton_3", nLedStatus==ON?true:false);
+        dx->setChecked("radioButton_4", nLedStatus==OFF?true:false);
     }
     else {
         // disable unsued controls when not connected
