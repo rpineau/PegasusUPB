@@ -290,8 +290,8 @@
      <widget class="QPushButton" name="pushButtonCancel">
       <property name="geometry">
        <rect>
-        <x>290</x>
-        <y>640</y>
+        <x>360</x>
+        <y>616</y>
         <width>81</width>
         <height>24</height>
        </rect>
@@ -306,8 +306,8 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>384</x>
-        <y>640</y>
+        <x>360</x>
+        <y>648</y>
         <width>81</width>
         <height>24</height>
        </rect>
@@ -913,7 +913,7 @@
        <rect>
         <x>8</x>
         <y>544</y>
-        <width>256</width>
+        <width>312</width>
         <height>128</height>
        </rect>
       </property>
@@ -949,7 +949,7 @@
       <widget class="QSpinBox" name="dewHeaterA">
        <property name="geometry">
         <rect>
-         <x>128</x>
+         <x>120</x>
          <y>32</y>
          <width>56</width>
          <height>24</height>
@@ -968,7 +968,7 @@
       <widget class="QSpinBox" name="dewHeaterB">
        <property name="geometry">
         <rect>
-         <x>128</x>
+         <x>120</x>
          <y>64</y>
          <width>56</width>
          <height>24</height>
@@ -984,7 +984,7 @@
       <widget class="QPushButton" name="pushButton_3">
        <property name="geometry">
         <rect>
-         <x>192</x>
+         <x>184</x>
          <y>32</y>
          <width>50</width>
          <height>24</height>
@@ -997,7 +997,7 @@
       <widget class="QPushButton" name="pushButton_4">
        <property name="geometry">
         <rect>
-         <x>192</x>
+         <x>184</x>
          <y>64</y>
          <width>50</width>
          <height>24</height>
@@ -1020,14 +1020,46 @@
         <string>Auto Dew</string>
        </property>
       </widget>
+      <widget class="QLabel" name="DewADraw">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>32</y>
+         <width>56</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>00.0 A</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="DewBDraw">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>64</y>
+         <width>56</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>00.0 A</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_7">
       <property name="geometry">
        <rect>
-        <x>280</x>
+        <x>336</x>
         <y>544</y>
-        <width>184</width>
-        <height>64</height>
+        <width>128</width>
+        <height>56</height>
        </rect>
       </property>
       <property name="title">
@@ -1036,8 +1068,8 @@
       <widget class="QRadioButton" name="radioButton_3">
        <property name="geometry">
         <rect>
-         <x>32</x>
-         <y>32</y>
+         <x>16</x>
+         <y>24</y>
          <width>48</width>
          <height>24</height>
         </rect>
@@ -1049,8 +1081,8 @@
       <widget class="QRadioButton" name="radioButton_4">
        <property name="geometry">
         <rect>
-         <x>112</x>
-         <y>32</y>
+         <x>72</x>
+         <y>24</y>
          <width>48</width>
          <height>24</height>
         </rect>

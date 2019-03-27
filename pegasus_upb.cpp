@@ -42,7 +42,7 @@ CPegasusUPB::CPegasusUPB()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_26_1630.\n", timestamp);
+    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_27_1630.\n", timestamp);
     fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -333,9 +333,6 @@ int CPegasusUPB::getConsolidatedStatus()
 {
     int nErr;
     char szResp[SERIAL_BUFFER_SIZE];
-    int nPortStatus;
-    int nOvercurrentStatus;
-    int nUsbPortOff;
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
@@ -444,17 +441,16 @@ int CPegasusUPB::getConsolidatedStatus()
 #endif
 
     
-    nPortStatus = std::stoi(m_svParsedRespForPA[upbPortStatus]);
-    m_globalStatus.bPort1On = (nPortStatus & 1)      == 1? true : false;
-    m_globalStatus.bPort2On = (nPortStatus & 2) >> 1 == 1? true : false;
-    m_globalStatus.bPort3On = (nPortStatus & 4) >> 2 == 1? true : false;
-    m_globalStatus.bPort4On = (nPortStatus & 8) >> 3 == 1? true : false;
+    m_globalStatus.bPort1On = m_svParsedRespForPA[upbPortStatus].at(0) == '1'? true : false;
+    m_globalStatus.bPort2On = m_svParsedRespForPA[upbPortStatus].at(1) == '1'? true : false;
+    m_globalStatus.bPort3On = m_svParsedRespForPA[upbPortStatus].at(2) == '1'? true : false;
+    m_globalStatus.bPort4On = m_svParsedRespForPA[upbPortStatus].at(3) == '1'? true : false;
 
 #ifdef PEGA_DEBUG
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nPortStatus = %d\n", timestamp, nPortStatus);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nPortStatus = %s\n", timestamp, m_svParsedRespForPA[upbPortStatus].c_str());
     fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bPort1On = %s\n", timestamp, m_globalStatus.bPort1On?"Yes":"No");
     fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bPort2On = %s\n", timestamp, m_globalStatus.bPort2On?"Yes":"No");
     fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bPort3On = %s\n", timestamp, m_globalStatus.bPort3On?"Yes":"No");
@@ -462,13 +458,12 @@ int CPegasusUPB::getConsolidatedStatus()
     fflush(Logfile);
 #endif
 
-    nUsbPortOff = std::stoi(m_svParsedRespForPA[upbUsbStatus]);
-    m_globalStatus.bUsbPortOff = std::stoi(m_svParsedRespForPA[upbUsbStatus]) == 1 ? true: false;
+    m_globalStatus.bUsbPortOff = m_svParsedRespForPA[upbUsbStatus].at(0) == 1 ? true: false;
 #ifdef PEGA_DEBUG
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nUsbPortOff = %d\n", timestamp, nUsbPortOff);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nUsbPortOff = %s\n", timestamp, m_svParsedRespForPA[upbUsbStatus].c_str());
     fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bUsbPortOff = %s\n", timestamp, m_globalStatus.bUsbPortOff?"Yes":"No");
     fflush(Logfile);
 #endif
@@ -481,8 +476,8 @@ int CPegasusUPB::getConsolidatedStatus()
     m_globalStatus.fCurrentPort3 = std::stof(m_svParsedRespForPA[upbCurrentPort3])/400;
     m_globalStatus.fCurrentPort4 = std::stof(m_svParsedRespForPA[upbCurrentPort4])/400;
 
-    m_globalStatus.fCurrentDew1 = std::stof(m_svParsedRespForPA[upbCurrentDew1]);
-    m_globalStatus.fCurrentDew2 = std::stof(m_svParsedRespForPA[upbCurrentDew2]);
+    m_globalStatus.fCurrentDew1 = std::stof(m_svParsedRespForPA[upbCurrentDew1])/400;
+    m_globalStatus.fCurrentDew2 = std::stof(m_svParsedRespForPA[upbCurrentDew2])/400;
 
 #ifdef PEGA_DEBUG
     ltime = time(NULL);
@@ -499,20 +494,19 @@ int CPegasusUPB::getConsolidatedStatus()
     fflush(Logfile);
 #endif
 
-    nOvercurrentStatus = std::stoi(m_svParsedRespForPA[upbOvercurent]);
-    m_globalStatus.bOverCurrentPort1 = (nPortStatus & 1)      == 1? true : false;
-    m_globalStatus.bOverCurrentPort2 = (nPortStatus & 2) >> 1 == 1? true : false;
-    m_globalStatus.bOverCurrentPort3 = (nPortStatus & 4) >> 2 == 1? true : false;
-    m_globalStatus.bOverCurrentPort4 = (nPortStatus & 8) >> 3 == 1? true : false;
+    m_globalStatus.bOverCurrentPort1 = m_svParsedRespForPA[upbOvercurent].at(0) == '1'? true : false;
+    m_globalStatus.bOverCurrentPort2 = m_svParsedRespForPA[upbOvercurent].at(1) == '1'? true : false;
+    m_globalStatus.bOverCurrentPort3 = m_svParsedRespForPA[upbOvercurent].at(2) == '1'? true : false;
+    m_globalStatus.bOverCurrentPort4 = m_svParsedRespForPA[upbOvercurent].at(3) == '1'? true : false;
 
-    m_globalStatus.bOverCurrentDew1 = (nPortStatus & 16) >> 4 == 1? true : false;
-    m_globalStatus.bOverCurrentDew2 = (nPortStatus & 32) >> 5 == 1? true : false;
+    m_globalStatus.bOverCurrentDew1 = m_svParsedRespForPA[upbOvercurent].at(4) == '1'? true : false;
+    m_globalStatus.bOverCurrentDew2 = m_svParsedRespForPA[upbOvercurent].at(5) == '1'? true : false;
 
 #ifdef PEGA_DEBUG
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nOvercurrentStatus = %d\n", timestamp, nOvercurrentStatus);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nOvercurrentStatus = %s\n", timestamp, m_svParsedRespForPA[upbOvercurent].c_str());
     fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bOverCurrentPort1 = %s\n", timestamp, m_globalStatus.bOverCurrentPort1?"Yes":"No");
     fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bOverCurrentPort2 = %s\n", timestamp, m_globalStatus.bOverCurrentPort2?"Yes":"No");
     fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bOverCurrentPort3 = %s\n", timestamp, m_globalStatus.bOverCurrentPort3?"Yes":"No");
@@ -523,7 +517,7 @@ int CPegasusUPB::getConsolidatedStatus()
 #endif
 
     
-    m_globalStatus.bAutoDew = std::stoi(m_svParsedRespForPA[upbAutodew]) == 1 ? true : false;
+    m_globalStatus.bAutoDew = m_svParsedRespForPA[upbAutodew].at(0) == '1' ? true : false;
 
 #ifdef PEGA_DEBUG
     ltime = time(NULL);
@@ -557,7 +551,6 @@ int CPegasusUPB::getOnBootPowerState()
 {
     int nErr = PB_OK;
     char szResp[SERIAL_BUFFER_SIZE];
-    int nTmp;
     std::vector<std::string> sParsedResp;
 
     if(!m_bIsConnected)
@@ -570,18 +563,17 @@ int CPegasusUPB::getOnBootPowerState()
 
     // parse response
     nErr = parseResp(szResp, sParsedResp);
-    nTmp = atoi(sParsedResp[1].c_str());
 
-    m_globalStatus.bOnBootPort1On = (nTmp & 1)      == 1? true : false;
-    m_globalStatus.bOnBootPort2On = (nTmp & 2) >> 1 == 1? true : false;
-    m_globalStatus.bOnBootPort3On = (nTmp & 4) >> 2 == 1? true : false;
-    m_globalStatus.bOnBootPort4On = (nTmp & 8) >> 3 == 1? true : false;
+    m_globalStatus.bOnBootPort1On = sParsedResp[1].at(0) == '1'? true : false;
+    m_globalStatus.bOnBootPort2On = sParsedResp[1].at(1) == '1'? true : false;
+    m_globalStatus.bOnBootPort3On = sParsedResp[1].at(2) == '1'? true : false;
+    m_globalStatus.bOnBootPort4On = sParsedResp[1].at(3) == '1'? true : false;
 
 #ifdef PEGA_DEBUG
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPB::getOnBootPowerState] nTmp = %d\n", timestamp, nTmp);
+    fprintf(Logfile, "[%s] [CPegasusUPB::getOnBootPowerState] sParsedResp[1] : %s\n", timestamp, sParsedResp[1].c_str());
     fprintf(Logfile, "[%s] [CPegasusUPB::getOnBootPowerState] bOnBootPort1On = %s\n", timestamp, m_globalStatus.bOnBootPort1On?"Yes":"No");
     fprintf(Logfile, "[%s] [CPegasusUPB::getOnBootPowerState] bOnBootPort2On = %s\n", timestamp, m_globalStatus.bOnBootPort2On?"Yes":"No");
     fprintf(Logfile, "[%s] [CPegasusUPB::getOnBootPowerState] bOnBootPort3On = %s\n", timestamp, m_globalStatus.bOnBootPort3On?"Yes":"No");
@@ -1095,7 +1087,7 @@ int CPegasusUPB::setUsbOn(const bool &bEnable)
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
 
-    snprintf(szCmd, SERIAL_BUFFER_SIZE, "PE:%s\n", bEnable?"1":"0");
+    snprintf(szCmd, SERIAL_BUFFER_SIZE, "PU:%s\n", bEnable?"1":"0");
     nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
         return nErr;
@@ -1140,6 +1132,21 @@ int CPegasusUPB::getDewHeaterPWM(const int &nDewHeater)
             break;
         case 2:
             return m_globalStatus.nDew2PWM;
+            break;
+        default:
+            return -1;
+            break;
+    }
+}
+
+float CPegasusUPB::getDewHeaterCurrent(const int &nDewHeater)
+{
+    switch(nDewHeater) {
+        case 1:
+            return m_globalStatus.fCurrentDew1;
+            break;
+        case 2:
+            return m_globalStatus.fCurrentDew2;
             break;
         default:
             return -1;

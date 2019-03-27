@@ -299,7 +299,7 @@ int	X2Focuser::execModalSettingsDialog(void)
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%d %%", m_PegasusUPB.getHumidity());
         dx->setPropertyString("humidity","text", tmpBuf);
 
-        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getDewPoint());
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f ºC", m_PegasusUPB.getDewPoint());
         dx->setPropertyString("dewPoint","text", tmpBuf);
 
         // ports status
@@ -333,6 +333,9 @@ int	X2Focuser::execModalSettingsDialog(void)
             dx->setEnabled("dewHeaterA", true);
             dx->setEnabled("dewHeaterB", true);
         }
+        dx->setPropertyInt("DewADraw", "value", m_PegasusUPB.getDewHeaterCurrent(1));
+        dx->setPropertyInt("DewBDraw", "value", m_PegasusUPB.getDewHeaterCurrent(2));
+
         // LED
         m_PegasusUPB.getLedStatus(nLedStatus);
         dx->setChecked("radioButton_3", nLedStatus==ON?true:false);

@@ -203,7 +203,8 @@ public:
     
     int         setDewHeaterPWM(const int &nDewHeater, const int &nPWM);
     int         getDewHeaterPWM(const int &nDewHeater);
-
+    float       getDewHeaterCurrent(const int &nDewHeater);
+    
     int         setAutoDewOn(const bool &bOn);
     bool        isAutoDewOn();
 
