@@ -115,6 +115,19 @@ int CPegasusUPB::Connect(const char *pszPort)
 #endif
         return nErr;
     }
+    
+    nErr = getConsolidatedStatus();
+    if(nErr) {
+        m_pSerx->close();
+        m_bIsConnected = false;
+#ifdef PEGA_DEBUG
+        ltime = time(NULL);
+        timestamp = asctime(localtime(&ltime));
+        timestamp[strlen(timestamp) - 1] = 0;
+        fprintf(Logfile, "[%s] CPegasusUPB::Connect **** ERROR **** getting device full status\n", timestamp);
+        fflush(Logfile);
+#endif
+    }
 
     return nErr;
 }
