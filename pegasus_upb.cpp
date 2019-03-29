@@ -42,7 +42,7 @@ CPegasusUPB::CPegasusUPB()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_27_1630.\n", timestamp);
+    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_28_1530.\n", timestamp);
     fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -148,7 +148,7 @@ int CPegasusUPB::haltFocuser()
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
-    nErr = upbCommand("PH\n", NULL, 0);
+    nErr = upbCommand("SH\n", NULL, 0);
 	m_bAbborted = true;
 	
 	return nErr;
@@ -458,13 +458,13 @@ int CPegasusUPB::getConsolidatedStatus()
     fflush(Logfile);
 #endif
 
-    m_globalStatus.bUsbPortOff = m_svParsedRespForPA[upbUsbStatus].at(0) == 1 ? true: false;
+    m_globalStatus.bUsbPortOn = m_svParsedRespForPA[upbUsbStatus].at(0) == '1' ? false: true;
 #ifdef PEGA_DEBUG
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nUsbPortOff = %s\n", timestamp, m_svParsedRespForPA[upbUsbStatus].c_str());
-    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bUsbPortOff = %s\n", timestamp, m_globalStatus.bUsbPortOff?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] nUsbPortOn = %s\n", timestamp, m_svParsedRespForPA[upbUsbStatus].c_str());
+    fprintf(Logfile, "[%s] [CPegasusUPB::getConsolidatedStatus] bUsbPortOn = %s\n", timestamp, m_globalStatus.bUsbPortOn?"Yes":"No");
     fflush(Logfile);
 #endif
 
@@ -557,17 +557,18 @@ int CPegasusUPB::getOnBootPowerState()
         return ERR_COMMNOLINK;
 
     // get power state for all 4 ports
-    nErr = upbCommand("PS:1111\n", szResp, SERIAL_BUFFER_SIZE);
+    nErr = upbCommand("PS\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
         return nErr;
 
     // parse response
     nErr = parseResp(szResp, sParsedResp);
-
-    m_globalStatus.bOnBootPort1On = sParsedResp[1].at(0) == '1'? true : false;
-    m_globalStatus.bOnBootPort2On = sParsedResp[1].at(1) == '1'? true : false;
-    m_globalStatus.bOnBootPort3On = sParsedResp[1].at(2) == '1'? true : false;
-    m_globalStatus.bOnBootPort4On = sParsedResp[1].at(3) == '1'? true : false;
+    if(sParsedResp.size()>1 && sParsedResp[1].size()>=4) {
+        m_globalStatus.bOnBootPort1On = sParsedResp[1].at(0) == '1'? true : false;
+        m_globalStatus.bOnBootPort2On = sParsedResp[1].at(1) == '1'? true : false;
+        m_globalStatus.bOnBootPort3On = sParsedResp[1].at(2) == '1'? true : false;
+        m_globalStatus.bOnBootPort4On = sParsedResp[1].at(3) == '1'? true : false;
+    }
 
 #ifdef PEGA_DEBUG
     ltime = time(NULL);
@@ -1091,13 +1092,13 @@ int CPegasusUPB::setUsbOn(const bool &bEnable)
     nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
         return nErr;
-    m_globalStatus.bUsbPortOff = !bEnable;
+    m_globalStatus.bUsbPortOn = bEnable;
     return nErr;
 }
 
 bool CPegasusUPB::getUsbOn(void)
 {
-    return !m_globalStatus.bUsbPortOff;
+    return m_globalStatus.bUsbPortOn;
 }
 
 int CPegasusUPB::setDewHeaterPWM(const int &nDewHeater, const int &nPWM)

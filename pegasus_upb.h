@@ -82,7 +82,7 @@ typedef struct {
     bool    bOnBootPort2On;
     bool    bOnBootPort3On;
     bool    bOnBootPort4On;
-    bool    bUsbPortOff;
+    bool    bUsbPortOn;
     int     nDew1PWM;
     int     nDew2PWM;
     float   fCurrentPort1;
