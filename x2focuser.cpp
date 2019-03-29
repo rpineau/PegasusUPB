@@ -28,8 +28,8 @@ X2Focuser::X2Focuser(const char* pszDisplayName,
     // Read in settings
     if (m_pIniUtil) {
         m_PegasusUPB.setPosLimit(m_pIniUtil->readInt(PARENT_KEY, POS_LIMIT, 0));
-        m_PegasusUPB.enablePosLimit(m_pIniUtil->readInt(PARENT_KEY, POS_LIMIT_ENABLED, false));
-        m_bReverseEnabled = m_pIniUtil->readInt(PARENT_KEY, REVERSE_ENABLED, false);
+        m_PegasusUPB.enablePosLimit(m_pIniUtil->readInt(PARENT_KEY, POS_LIMIT_ENABLED, 0) == 0 ? false : true);
+        m_bReverseEnabled = m_pIniUtil->readInt(PARENT_KEY, REVERSE_ENABLED, 0) == 0 ? false : true;
     }
 	m_PegasusUPB.SetSerxPointer(m_pSerX);
 	m_PegasusUPB.setLogger(m_pLogger);
@@ -333,8 +333,11 @@ int	X2Focuser::execModalSettingsDialog(void)
             dx->setEnabled("dewHeaterA", true);
             dx->setEnabled("dewHeaterB", true);
         }
-        dx->setPropertyInt("DewADraw", "value", m_PegasusUPB.getDewHeaterCurrent(1));
-        dx->setPropertyInt("DewBDraw", "value", m_PegasusUPB.getDewHeaterCurrent(2));
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f A", m_PegasusUPB.getDewHeaterCurrent(1));
+        dx->setPropertyString("DewADraw","text", tmpBuf);
+
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f A", m_PegasusUPB.getDewHeaterCurrent(2));
+        dx->setPropertyString("DewBDraw","text", tmpBuf);
 
         // LED
         m_PegasusUPB.getLedStatus(nLedStatus);
@@ -365,10 +368,6 @@ int	X2Focuser::execModalSettingsDialog(void)
         dx->setEnabled("checkBox_6", false);
         dx->setEnabled("checkBox_7", false);
         dx->setEnabled("checkBox_8", false);
-        dx->setPropertyString("port1Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
-        dx->setPropertyString("port2Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
-        dx->setPropertyString("port3Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
-        dx->setPropertyString("port4Draw","text", "<html><head/><body><p><span style=\" color:#ffffff;\">--.- A</span></p></body></html>");
 
         dx->setEnabled("dewHeaterA", false);
         dx->setEnabled("dewHeaterB", false);
@@ -397,7 +396,7 @@ int	X2Focuser::execModalSettingsDialog(void)
     if (bPressedOK) {
         nErr = SB_OK;
         // get limit option
-        bLimitEnabled = dx->isChecked("limitEnable");
+        bLimitEnabled = dx->isChecked("limitEnable") == 0 ? false : true;
         dx->propertyInt("posLimit", "value", nPosLimit);
         if(bLimitEnabled && nPosLimit>0) { // a position limit of 0 doesn't make sense :)
             m_PegasusUPB.setPosLimit(nPosLimit);
@@ -408,7 +407,7 @@ int	X2Focuser::execModalSettingsDialog(void)
         }
 		if(m_bLinked) {
 			// get reverse
-			bReverse = dx->isChecked("reverseDir");
+            bReverse = dx->isChecked("reverseDir") == 0 ? false : true;
 			nErr = m_PegasusUPB.setReverseEnable(bReverse);
 			if(nErr)
 				return nErr;
@@ -418,7 +417,7 @@ int	X2Focuser::execModalSettingsDialog(void)
                 return nErr;
 
 			// get backlash if enable, disbale if needed
-			bBacklashEnabled = dx->isChecked("backlashEnable");
+            bBacklashEnabled = dx->isChecked("backlashEnable") == 0 ? false : true;
 			if(bBacklashEnabled) {
 				dx->propertyInt("backlashSteps", "value", nBacklashSteps);
 				nErr = m_PegasusUPB.setBacklashComp(nBacklashSteps);
@@ -433,7 +432,7 @@ int	X2Focuser::execModalSettingsDialog(void)
 		}
         // save values to config
         nErr |= m_pIniUtil->writeInt(PARENT_KEY, POS_LIMIT, nPosLimit);
-        nErr |= m_pIniUtil->writeInt(PARENT_KEY, POS_LIMIT_ENABLED, bLimitEnabled);
+        nErr |= m_pIniUtil->writeInt(PARENT_KEY, POS_LIMIT_ENABLED, bLimitEnabled?1:0);
     }
     return nErr;
 }
@@ -503,16 +502,16 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
     }
     // Port state on boot
     else if (!strcmp(pszEvent, "on_checkBox_5_stateChanged")) {
-        m_PegasusUPB.setOnBootPortOn(1, uiex->isChecked("checkBox_4"));
+        m_PegasusUPB.setOnBootPortOn(1, uiex->isChecked("checkBox_4") == 0 ? false : true);
     }
     else if (!strcmp(pszEvent, "on_checkBox_6_stateChanged")) {
-        m_PegasusUPB.setOnBootPortOn(2, uiex->isChecked("checkBox_4"));
+        m_PegasusUPB.setOnBootPortOn(2, uiex->isChecked("checkBox_4") == 0 ? false : true);
     }
     else if (!strcmp(pszEvent, "on_checkBox_7_stateChanged")) {
-        m_PegasusUPB.setOnBootPortOn(3, uiex->isChecked("checkBox_4"));
+        m_PegasusUPB.setOnBootPortOn(3, uiex->isChecked("checkBox_4") == 0 ? false : true);
     }
     else if (!strcmp(pszEvent, "on_checkBox_8_stateChanged")) {
-        m_PegasusUPB.setOnBootPortOn(4, uiex->isChecked("checkBox_4"));
+        m_PegasusUPB.setOnBootPortOn(4, uiex->isChecked("checkBox_4") == 0 ? false : true);
     }
     // Set Dew A/B PWM and Auto Dew
     else if (!strcmp(pszEvent, "on_pushButton_3_clicked")) {
@@ -524,7 +523,7 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
         m_PegasusUPB.setDewHeaterPWM(2, nTmpVal);
     }
     else if (!strcmp(pszEvent, "on_checkBox_9_stateChanged")) {
-        m_PegasusUPB.setAutoDewOn(uiex->isChecked("checkBox_4"));
+        m_PegasusUPB.setAutoDewOn(uiex->isChecked("checkBox_4") == 0 ? false : true);
         if(uiex->isChecked("checkBox_4")) {
             uiex->setEnabled("dewHeaterA", false);
             uiex->setEnabled("dewHeaterB", false);
