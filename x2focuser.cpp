@@ -241,16 +241,16 @@ int	X2Focuser::execModalSettingsDialog(void)
 
         // motor max speed
         nErr = m_PegasusUPB.getMotoMaxSpeed(nMaxSpeed);
-        if(nErr)
-            return nErr;
+        //if(nErr)
+        //    return nErr;
         dx->setEnabled("maxSpeed", true);
         dx->setEnabled("pushButton", true);
         dx->setPropertyInt("maxSpeed", "value", nMaxSpeed);
 
         // new position (set to current )
         nErr = m_PegasusUPB.getPosition(nPosition);
-        if(nErr)
-            return nErr;
+        //if(nErr)
+        //   return nErr;
         dx->setEnabled("newPos", true);
         dx->setEnabled("pushButton_2", true);
         dx->setPropertyInt("newPos", "value", nPosition);
@@ -266,8 +266,8 @@ int	X2Focuser::execModalSettingsDialog(void)
         // backlash
         dx->setEnabled("backlashSteps", true);
         nErr = m_PegasusUPB.getBacklashComp(nBacklashSteps);
-        if(nErr)
-            return nErr;
+        //if(nErr)
+        //    return nErr;
         dx->setPropertyInt("backlashSteps", "value", nBacklashSteps);
 
         if(!nBacklashSteps)  // backlash = 0 means disabled.
@@ -445,7 +445,7 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
     char szErrorMessage[TEXT_BUFFER_SIZE];
     char tmpBuf[TEXT_BUFFER_SIZE];
 
-    printf("pszEvent = %s\n", pszEvent);
+    // printf("pszEvent = %s\n", pszEvent);
     
     if(!m_bLinked)
         return;
@@ -552,14 +552,14 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
         m_PegasusUPB.setDewHeaterPWM(2, nTmpVal);
     }
     else if (!strcmp(pszEvent, "on_checkBox_9_stateChanged")) {
-        m_PegasusUPB.setAutoDewOn(uiex->isChecked("checkBox_4") == 0 ? false : true);
-        if(uiex->isChecked("checkBox_4")) {
-            uiex->setEnabled("dewHeaterA", false);
-            uiex->setEnabled("dewHeaterB", false);
+        m_PegasusUPB.setAutoDewOn(uiex->isChecked("checkBox_9") == 0 ? false : true);
+        if(uiex->isChecked("checkBox_9")) {
+            uiex->setEnabled("dewHeaterA", 0);
+            uiex->setEnabled("dewHeaterB", 0);
         }
         else {
-            uiex->setEnabled("dewHeaterA", true);
-            uiex->setEnabled("dewHeaterB", true);
+            uiex->setEnabled("dewHeaterA", 1);
+            uiex->setEnabled("dewHeaterB", 1);
         }
     }
     // LED On/Off
