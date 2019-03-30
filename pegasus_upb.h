@@ -197,7 +197,8 @@ public:
     bool        getOnBootPortOn(const int &nPortNumber);
     int         setOnBootPortOn(const int &nPortNumber, const bool &bEnable);
     bool        isOverCurrentPort(const int &nPortNumber);
-
+    bool        isOverCurrentDewHeater(const int &nPortNumber);
+    
     int         setUsbOn(const bool &bEnable);
     bool        getUsbOn(void);
     

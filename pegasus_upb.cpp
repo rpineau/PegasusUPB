@@ -42,7 +42,7 @@ CPegasusUPB::CPegasusUPB()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_28_1900.\n", timestamp);
+    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_29_1830.\n", timestamp);
     fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -1073,6 +1073,23 @@ bool CPegasusUPB::isOverCurrentPort(const int &nPortNumber)
 
         case 4:
             return m_globalStatus.bOverCurrentPort4;
+            break;
+
+        default:
+            return false;
+            break;
+    }
+}
+
+bool CPegasusUPB::isOverCurrentDewHeater(const int &nPortNumber)
+{
+    switch(nPortNumber) {
+        case 1:
+            return m_globalStatus.bOverCurrentDew1;
+            break;
+
+        case 2:
+            return m_globalStatus.bOverCurrentDew2;
             break;
 
         default:

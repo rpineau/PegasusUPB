@@ -288,7 +288,7 @@ int	X2Focuser::execModalSettingsDialog(void)
         dx->setPropertyString("voltage","text", tmpBuf);
 
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f A", m_PegasusUPB.getCurrent());
-        dx->setPropertyString("currentcurrent","text", tmpBuf);
+        dx->setPropertyString("current","text", tmpBuf);
 
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%d W", m_PegasusUPB.getPower());
         dx->setPropertyString("totalPower","text", tmpBuf);
@@ -333,10 +333,11 @@ int	X2Focuser::execModalSettingsDialog(void)
             dx->setEnabled("dewHeaterA", true);
             dx->setEnabled("dewHeaterB", true);
         }
-        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f A", m_PegasusUPB.getDewHeaterCurrent(1));
+
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentDewHeater(1)?"ff0000":"00ff00", m_PegasusUPB.getDewHeaterCurrent(1));
         dx->setPropertyString("DewADraw","text", tmpBuf);
 
-        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f A", m_PegasusUPB.getDewHeaterCurrent(2));
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentDewHeater(2)?"ff0000":"00ff00", m_PegasusUPB.getDewHeaterCurrent(2));
         dx->setPropertyString("DewBDraw","text", tmpBuf);
 
         // LED
@@ -451,14 +452,42 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
     
     if (!strcmp(pszEvent, "on_timer")) {
         m_PegasusUPB.getConsolidatedStatus();
+        // Controller value
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getVoltage());
+        uiex->setPropertyString("voltage","text", tmpBuf);
+
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f A", m_PegasusUPB.getCurrent());
+        uiex->setPropertyString("current","text", tmpBuf);
+
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%d W", m_PegasusUPB.getPower());
+        uiex->setPropertyString("totalPower","text", tmpBuf);
+
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f ºC", m_PegasusUPB.getTemp());
+        uiex->setPropertyString("temperature","text", tmpBuf);
+
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%d %%", m_PegasusUPB.getHumidity());
+        uiex->setPropertyString("humidity","text", tmpBuf);
+
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f ºC", m_PegasusUPB.getDewPoint());
+        uiex->setPropertyString("dewPoint","text", tmpBuf);
+
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(1)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(1));
         uiex->setPropertyString("port1Draw","text", tmpBuf);
+
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(2)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(2));
         uiex->setPropertyString("port2Draw","text", tmpBuf);
+
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(3)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(3));
         uiex->setPropertyString("port3Draw","text", tmpBuf);
+
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentPort(4)?"ff0000":"00ff00", m_PegasusUPB.getPortCurrent(4));
         uiex->setPropertyString("port4Draw","text", tmpBuf);
+
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentDewHeater(1)?"ff0000":"00ff00", m_PegasusUPB.getDewHeaterCurrent(1));
+        uiex->setPropertyString("DewADraw","text", tmpBuf);
+
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPB.isOverCurrentDewHeater(2)?"ff0000":"00ff00", m_PegasusUPB.getDewHeaterCurrent(2));
+        uiex->setPropertyString("DewBDraw","text", tmpBuf);
     }
     // max speed
     else if (!strcmp(pszEvent, "on_pushButton_clicked")) {
