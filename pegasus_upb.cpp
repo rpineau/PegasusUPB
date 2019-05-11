@@ -196,6 +196,8 @@ int CPegasusUPB::moveRelativeToPosision(int nSteps)
     fflush(Logfile);
 #endif
 
+    m_nTargetPos = m_globalStatus.focuser.nCurPos + nSteps;
+
     sprintf(szCmd,"SG:%d\n", nSteps);
     nErr = upbCommand(szCmd, NULL, 0);
 
