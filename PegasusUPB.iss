@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Pegasus Astro Ultimate Power Box X2 Driver"
-#define MyAppVersion "1.1"
+#define MyAppVersion "1.2"
 #define MyAppPublisher "RTI-Zone"
 #define MyAppURL "https://rti-zone.org"
 

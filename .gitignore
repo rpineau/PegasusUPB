@@ -9,3 +9,5 @@ Release
 *.pkg
 *.so
 *.zip
+*.vcxproj.user
+*.exe

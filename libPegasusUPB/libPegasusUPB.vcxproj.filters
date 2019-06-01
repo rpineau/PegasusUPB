@@ -18,10 +18,10 @@
     <ClInclude Include="..\main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pegasus.h">
+    <ClInclude Include="..\x2focuser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\x2focuser.h">
+    <ClInclude Include="..\pegasus_upb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -29,10 +29,10 @@
     <ClCompile Include="..\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pegasus.cpp">
+    <ClCompile Include="..\x2focuser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\x2focuser.cpp">
+    <ClCompile Include="..\pegasus_upb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
