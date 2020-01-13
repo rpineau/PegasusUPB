@@ -42,7 +42,7 @@ CPegasusUPB::CPegasusUPB()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_03_29_1930.\n", timestamp);
+    fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] build 2019_05_31_1540.\n", timestamp);
     fprintf(Logfile, "[%s] [CPegasusUPB::CPegasusUPB] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -101,7 +101,7 @@ int CPegasusUPB::Connect(const char *pszPort)
 #endif
     nErr = getDeviceType(nDevice);
     if(nErr) {
-        if(nDevice != UPB) {
+        if(nDevice != UPB && nDevice != PPB) {
             m_pSerx->close();
             m_bIsConnected = false;
             nErr = ERR_DEVICENOTSUPPORTED;
@@ -143,10 +143,13 @@ void CPegasusUPB::Disconnect()
 #pragma mark move commands
 int CPegasusUPB::haltFocuser()
 {
-    int nErr;
+    int nErr = PB_OK;
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
+    
+    if(m_globalStatus.nDeviceType != UPB)
+        return nErr;
 
     nErr = upbCommand("SH\n", NULL, 0);
 	m_bAbborted = true;
@@ -156,12 +159,17 @@ int CPegasusUPB::haltFocuser()
 
 int CPegasusUPB::gotoPosition(int nPos)
 {
-    int nErr;
+    int nErr = PB_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
+    if(m_globalStatus.nDeviceType != UPB) {
+        m_nTargetPos = nPos;
+        return nErr;
+    }
+    
     if (m_bPosLimitEnabled && nPos>m_nPosLimit)
         return ERR_LIMITSEXCEEDED;
 
@@ -182,11 +190,16 @@ int CPegasusUPB::gotoPosition(int nPos)
 
 int CPegasusUPB::moveRelativeToPosision(int nSteps)
 {
-    int nErr;
+    int nErr = PB_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
+
+    if(m_globalStatus.nDeviceType != UPB) {
+        m_nTargetPos = m_globalStatus.focuser.nCurPos + nSteps;
+        return nErr;
+    }
 
 #ifdef PEGA_DEBUG
     ltime = time(NULL);
@@ -213,6 +226,12 @@ int CPegasusUPB::isGoToComplete(bool &bComplete)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
+    if(m_globalStatus.nDeviceType != UPB) {
+        m_globalStatus.focuser.nCurPos = m_nTargetPos;
+        bComplete = true;
+        return nErr;
+    }
+
     getPosition(m_globalStatus.focuser.nCurPos);
 	if(m_bAbborted) {
 		bComplete = true;
@@ -234,6 +253,12 @@ int CPegasusUPB::isMotorMoving(bool &bMoving)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 	
+    if(m_globalStatus.nDeviceType != UPB) {
+        m_globalStatus.focuser.bMoving = IDLE;
+        bMoving = false;
+        return nErr;
+    }
+
     nErr = upbCommand("SI\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
         return nErr;
@@ -294,7 +319,14 @@ int CPegasusUPB::getStepperStatus()
     if(!m_bIsConnected)
         return ERR_COMMNOLINK;
 
-    // OK_UPB or OK_PPB
+    if(m_globalStatus.nDeviceType != UPB) {
+        m_globalStatus.focuser.nCurPos = 0;
+        m_globalStatus.focuser.bMoving = false;
+        m_globalStatus.focuser.bReverse = false;
+        m_globalStatus.focuser.nBacklash = 0;
+        return nErr;
+    }
+
     nErr = upbCommand("SA\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
         return nErr;
@@ -595,6 +627,11 @@ int CPegasusUPB::getMotoMaxSpeed(int &nSpeed)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
+    if(m_globalStatus.nDeviceType != UPB) {
+        nSpeed = 500;   // random value
+        return nErr;
+    }
+    
     nErr = upbCommand("SS\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
         return nErr;
@@ -614,12 +651,16 @@ int CPegasusUPB::getMotoMaxSpeed(int &nSpeed)
 
 int CPegasusUPB::setMotoMaxSpeed(int nSpeed)
 {
-    int nErr;
+    int nErr = PB_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
-	
+
+    if(m_globalStatus.nDeviceType != UPB) {
+        return nErr;
+    }
+
     sprintf(szCmd,"SS:%d\n", nSpeed);
     nErr = upbCommand(szCmd, NULL, 0);
 
@@ -628,11 +669,16 @@ int CPegasusUPB::setMotoMaxSpeed(int nSpeed)
 
 int CPegasusUPB::getBacklashComp(int &nSteps)
 {
-    int nErr;
+    int nErr = PB_OK;
 	
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 	
+    if(m_globalStatus.nDeviceType != UPB) {
+        nSteps = 0;
+        return nErr;
+    }
+
     nErr = getStepperStatus();
     nSteps = m_globalStatus.focuser.nBacklash;
 
@@ -647,6 +693,11 @@ int CPegasusUPB::setBacklashComp(int nSteps)
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
+
+    if(m_globalStatus.nDeviceType != UPB) {
+        m_globalStatus.focuser.nBacklash = nSteps;
+        return nErr;
+    }
 
 #ifdef PEGA_DEBUG
     ltime = time(NULL);
@@ -713,6 +764,11 @@ int CPegasusUPB::getPosition(int &nPosition)
 	
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
+
+    if(m_globalStatus.nDeviceType != UPB) {
+        nPosition = m_globalStatus.focuser.nCurPos;
+        return nErr;
+    }
 
     nErr = upbCommand("SP\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
@@ -785,6 +841,10 @@ int CPegasusUPB::syncMotorPosition(int nPos)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
+    if(m_globalStatus.nDeviceType != UPB) {
+        m_globalStatus.focuser.nCurPos = nPos;
+        return nErr;
+    }
     snprintf(szCmd, SERIAL_BUFFER_SIZE, "SC:%d\n", nPos);
     nErr = upbCommand(szCmd, NULL, 0);
     return nErr;
@@ -834,6 +894,11 @@ int CPegasusUPB::setReverseEnable(bool bEnabled)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
+    if(m_globalStatus.nDeviceType != UPB) {
+        m_globalStatus.focuser.bReverse = bEnabled;
+        return nErr;
+    }
+    
     if(bEnabled)
         sprintf(szCmd,"SR:%d\n", REVERSE);
     else
@@ -869,6 +934,10 @@ int CPegasusUPB::getReverseEnable(bool &bEnabled)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
+    if(m_globalStatus.nDeviceType != UPB) {
+        bEnabled = m_globalStatus.focuser.bReverse;
+        return nErr;
+    }
     nErr = getStepperStatus();
     bEnabled = m_globalStatus.focuser.bReverse;
 
@@ -1107,6 +1176,10 @@ int CPegasusUPB::setUsbOn(const bool &bEnable)
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
 
+    if(m_globalStatus.nDeviceType != UPB) {
+        m_globalStatus.bUsbPortOn = bEnable;
+        return nErr;
+    }
     snprintf(szCmd, SERIAL_BUFFER_SIZE, "PU:%s\n", bEnable?"1":"0");
     nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
     if(nErr)

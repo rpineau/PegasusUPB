@@ -221,7 +221,8 @@ int	X2Focuser::execModalSettingsDialog(void)
     bool bBacklashEnabled = false;
     bool bReverse = false;
     int nLedStatus;
-
+    int nDeviceType = UPB;
+    
     if (NULL == ui)
         return ERR_POINTER;
 
@@ -237,52 +238,70 @@ int	X2Focuser::execModalSettingsDialog(void)
     if(m_bLinked) {
         // get data from device
         m_PegasusUPB.getConsolidatedStatus();
-        // enable all controls
-
-        // motor max speed
-        nErr = m_PegasusUPB.getMotoMaxSpeed(nMaxSpeed);
-        //if(nErr)
-        //    return nErr;
-        dx->setEnabled("maxSpeed", true);
-        dx->setEnabled("pushButton", true);
-        dx->setPropertyInt("maxSpeed", "value", nMaxSpeed);
-
-        // new position (set to current )
-        nErr = m_PegasusUPB.getPosition(nPosition);
-        //if(nErr)
-        //   return nErr;
-        dx->setEnabled("newPos", true);
-        dx->setEnabled("pushButton_2", true);
-        dx->setPropertyInt("newPos", "value", nPosition);
-
-        // reverse
-        dx->setEnabled("reverseDir", true);
-        nErr = m_PegasusUPB.getReverseEnable(bReverse);
-        if(bReverse)
-            dx->setChecked("reverseDir", true);
-        else
-            dx->setChecked("reverseDir", false);
-
-        // backlash
-        dx->setEnabled("backlashSteps", true);
-        nErr = m_PegasusUPB.getBacklashComp(nBacklashSteps);
-        //if(nErr)
-        //    return nErr;
-        dx->setPropertyInt("backlashSteps", "value", nBacklashSteps);
-
-        if(!nBacklashSteps)  // backlash = 0 means disabled.
-            bBacklashEnabled = false;
-        else
-            bBacklashEnabled = true;
-        if(bBacklashEnabled)
-            dx->setChecked("backlashEnable", true);
-        else
-            dx->setChecked("backlashEnable", false);
-
-        // USB
-        dx->setChecked("radioButton", m_PegasusUPB.getUsbOn());
-        dx->setChecked("radioButton_2", !m_PegasusUPB.getUsbOn());
+        m_PegasusUPB.getDeviceType(nDeviceType);
         
+        // enable all controls
+        if(nDeviceType == UPB) {
+            // motor max speed
+            nErr = m_PegasusUPB.getMotoMaxSpeed(nMaxSpeed);
+            //if(nErr)
+            //    return nErr;
+            dx->setEnabled("maxSpeed", true);
+            dx->setEnabled("pushButton", true);
+            dx->setPropertyInt("maxSpeed", "value", nMaxSpeed);
+
+            // new position (set to current )
+            nErr = m_PegasusUPB.getPosition(nPosition);
+            //if(nErr)
+            //   return nErr;
+            dx->setEnabled("newPos", true);
+            dx->setEnabled("pushButton_2", true);
+            dx->setPropertyInt("newPos", "value", nPosition);
+
+            // reverse
+            dx->setEnabled("reverseDir", true);
+            nErr = m_PegasusUPB.getReverseEnable(bReverse);
+            if(bReverse)
+                dx->setChecked("reverseDir", true);
+            else
+                dx->setChecked("reverseDir", false);
+
+            // backlash
+            dx->setEnabled("backlashSteps", true);
+            nErr = m_PegasusUPB.getBacklashComp(nBacklashSteps);
+            //if(nErr)
+            //    return nErr;
+            dx->setPropertyInt("backlashSteps", "value", nBacklashSteps);
+
+            if(!nBacklashSteps)  // backlash = 0 means disabled.
+                bBacklashEnabled = false;
+            else
+                bBacklashEnabled = true;
+            if(bBacklashEnabled)
+                dx->setChecked("backlashEnable", true);
+            else
+                dx->setChecked("backlashEnable", false);
+
+            // USB
+            dx->setChecked("radioButton", m_PegasusUPB.getUsbOn());
+            dx->setChecked("radioButton_2", !m_PegasusUPB.getUsbOn());
+        }
+        else {
+            dx->setEnabled("maxSpeed", false);
+            dx->setPropertyInt("maxSpeed", "value", 0);
+            dx->setEnabled("pushButton", false);
+            dx->setEnabled("newPos", false);
+            dx->setPropertyInt("newPos", "value", 0);
+            dx->setEnabled("reverseDir", false);
+            dx->setEnabled("pushButton_2", false);
+            dx->setEnabled("backlashSteps", false);
+            dx->setPropertyInt("backlashSteps", "value", 0);
+            dx->setEnabled("backlashEnable", false);
+            // USB
+            dx->setEnabled("radioButton", false);
+            dx->setEnabled("radioButton_2", false);
+        }
+
         // Controller value
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f V", m_PegasusUPB.getVoltage());
         dx->setPropertyString("voltage","text", tmpBuf);
