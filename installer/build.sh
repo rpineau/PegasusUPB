@@ -4,7 +4,7 @@ PACKAGE_NAME="PegasusUPB_X2.pkg"
 BUNDLE_NAME="org.rti-zone.PegasusUPBX2"
 
 if [ ! -z "$app_id_signature" ]; then
-    codesign -s "$app_id_signature" ../build/Release/libPegasusUPB.dylib
+   codesign -f -s "$app_id_signature" --verbose ../build/Release/libPegasusUPB.dylib
 fi
 
 mkdir -p ROOT/tmp/PegasusUPB_X2/

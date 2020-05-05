@@ -550,16 +550,16 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
     }
     // Port state on boot
     else if (!strcmp(pszEvent, "on_checkBox_5_stateChanged")) {
-        m_PegasusUPB.setOnBootPortOn(1, uiex->isChecked("checkBox_4") == 0 ? false : true);
+        m_PegasusUPB.setOnBootPortOn(1, uiex->isChecked("checkBox_5") == 0 ? false : true);
     }
     else if (!strcmp(pszEvent, "on_checkBox_6_stateChanged")) {
-        m_PegasusUPB.setOnBootPortOn(2, uiex->isChecked("checkBox_4") == 0 ? false : true);
+        m_PegasusUPB.setOnBootPortOn(2, uiex->isChecked("checkBox_6") == 0 ? false : true);
     }
     else if (!strcmp(pszEvent, "on_checkBox_7_stateChanged")) {
-        m_PegasusUPB.setOnBootPortOn(3, uiex->isChecked("checkBox_4") == 0 ? false : true);
+        m_PegasusUPB.setOnBootPortOn(3, uiex->isChecked("checkBox_7") == 0 ? false : true);
     }
     else if (!strcmp(pszEvent, "on_checkBox_8_stateChanged")) {
-        m_PegasusUPB.setOnBootPortOn(4, uiex->isChecked("checkBox_4") == 0 ? false : true);
+        m_PegasusUPB.setOnBootPortOn(4, uiex->isChecked("checkBox_8") == 0 ? false : true);
     }
     // Set Dew A/B PWM and Auto Dew
     else if (!strcmp(pszEvent, "on_pushButton_3_clicked")) {
