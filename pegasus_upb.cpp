@@ -210,10 +210,7 @@ int CPegasusUPB::moveRelativeToPosision(int nSteps)
 #endif
 
     m_nTargetPos = m_globalStatus.focuser.nCurPos + nSteps;
-
-    sprintf(szCmd,"SG:%d\n", nSteps);
-    nErr = upbCommand(szCmd, NULL, 0);
-
+    nErr = gotoPosition(m_nTargetPos);
     return nErr;
 }
 
