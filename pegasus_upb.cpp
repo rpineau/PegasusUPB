@@ -210,10 +210,7 @@ int CPegasusUPB::moveRelativeToPosision(int nSteps)
 #endif
 
     m_nTargetPos = m_globalStatus.focuser.nCurPos + nSteps;
-
-    sprintf(szCmd,"SG:%d\n", nSteps);
-    nErr = upbCommand(szCmd, NULL, 0);
-
+    nErr = gotoPosition(m_nTargetPos);
     return nErr;
 }
 
@@ -1008,19 +1005,19 @@ int CPegasusUPB::setPortOn(const int &nPortNumber, const bool &bEnabled)
 
     switch(nPortNumber) {
         case 1:
-            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P1:%d", bEnabled?1:0);
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P1:%d\n", bEnabled?1:0);
             m_globalStatus.bPort1On = bEnabled;
             break;
         case 2:
-            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P2:%d", bEnabled?1:0);
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P2:%d\n", bEnabled?1:0);
             m_globalStatus.bPort2On = bEnabled;
             break;
         case 3:
-            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P3:%d", bEnabled?1:0);
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P3:%d\n", bEnabled?1:0);
             m_globalStatus.bPort3On = bEnabled;
             break;
         case 4:
-            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P4:%d", bEnabled?1:0);
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P4:%d\n", bEnabled?1:0);
             m_globalStatus.bPort4On = bEnabled;
             break;
         default:
@@ -1299,7 +1296,7 @@ int CPegasusUPB::upbCommand(const char *pszszCmd, char *pszResult, unsigned long
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s] CPegasusUPB::upbCommand Sending %s\n", timestamp, pszszCmd);
+	fprintf(Logfile, "[%s] CPegasusUPB::upbCommand Sending %s", timestamp, pszszCmd);
 	fflush(Logfile);
 #endif
     nErr = m_pSerx->writeFile((void *)pszszCmd, strlen(pszszCmd), ulBytesWrite);
