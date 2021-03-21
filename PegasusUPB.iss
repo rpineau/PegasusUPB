@@ -40,14 +40,23 @@ DirExistsWarning=no
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+[Dirs]
+Name: "{app}\Plugins\FocuserPlugins";
+Name: "{app}\Plugins64\FocuserPlugins";
+
 [Files]
 ; WIll also need to customise these!
-Source: "focuserlist PegasusUPB.txt"; DestDir: "{app}\Miscellaneous Files"; Flags: ignoreversion
-Source: "libPegasusUPB\Release\libPegasusUPB.dll"; DestDir: "{app}\Plugins\FocuserPlugins"; Flags: ignoreversion
-Source: "PegasusUPB.ui"; DestDir: "{app}\Plugins\FocuserPlugins"; Flags: ignoreversion
-Source: "PegasusAstro.png"; DestDir: "{app}\Plugins\FocuserPlugins"; Flags: ignoreversion
-; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-; msgBox('Do you want to install MyProg.exe to ' + ExtractFilePath(CurrentFileName) + '?', mbConfirmation, MB_YESNO)
+Source: "focuserlist PegasusUPB.txt";                       DestDir: "{app}\Miscellaneous Files"; Flags: ignoreversion
+Source: "focuserlist PegasusUPB.txt";                       DestDir: "{app}\Miscellaneous Files"; DestName: "focuserlist64 PegasusUPB.txt";Flags: ignoreversion
+; 32 bits
+Source: "libPegasusUPB\Win32\Release\libPegasusUPB.dll";    DestDir: "{app}\Plugins\FocuserPlugins"; Flags: ignoreversion
+Source: "PegasusUPB.ui";                                    DestDir: "{app}\Plugins\FocuserPlugins"; Flags: ignoreversion
+Source: "PegasusAstro.png";                                 DestDir: "{app}\Plugins\FocuserPlugins"; Flags: ignoreversion
+; 64 bits
+Source: "libPegasusUPB\x64\Release\libPegasusUPB.dll";      DestDir: "{app}\Plugins64\FocuserPlugins"; Flags: ignoreversion; Check: DirExists(ExpandConstant('{app}\Plugins64\FocuserPlugins'))
+Source: "PegasusUPB.ui";                                    DestDir: "{app}\Plugins64\FocuserPlugins"; Flags: ignoreversion; Check: DirExists(ExpandConstant('{app}\Plugins64\FocuserPlugins'))
+Source: "PegasusAstro.png";                                 DestDir: "{app}\Plugins64\FocuserPlugins"; Flags: ignoreversion; Check: DirExists(ExpandConstant('{app}\Plugins64\FocuserPlugins'))
+
 
 [Code]
 {* Below is a function to read TheSkyXInstallPath.txt and confirm that the directory does exist
